@@ -41,7 +41,7 @@ class _FirstLevelPageState extends State<FirstLevelPage> {
     // Görseli gösterdikten 0.5 saniye sonra rakam sesi çal
     Future.delayed(const Duration(milliseconds: 500), () {
       _audioService.playAudio(_selectedAudio);
-    });
+    });  
 
     // Splash ekran süresi tamamlanınca FirstLevelScreen'e geç
     Timer(AppConstants.splashDuration, () {

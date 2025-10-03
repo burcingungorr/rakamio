@@ -215,17 +215,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
             ),
           ),
           // Geri dönüş oku (sol üst köşe)
-          Positioned(
-            left: 20,
-            top: 50,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, size: 40),
-              color: Colors.black,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
+         
         ],
       ),
     );

@@ -89,18 +89,6 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
     });
   }
 
-  // Rakam ipucu widget (ortada)
-  Widget _buildHint() {
-    return Text(
-      widget.correctNumber,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 75,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
   Widget _buildIconButton(
       {required IconData icon, required VoidCallback onPressed}) {
     return Container(
@@ -129,7 +117,6 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildIconButton(icon: Icons.clear, onPressed: _clearCanvas),
-                _buildHint(), // ortada rakam, arka plan yok
                 _buildIconButton(icon: Icons.check, onPressed: _predictDigit),
               ],
             ),

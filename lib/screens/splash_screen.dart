@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'level_selection_screen.dart';
+import 'home_screen.dart';  // Burayı ekledik
 import '../utils/constants.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(AppConstants.splashDuration, () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LevelSelectionScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen()), // HomeScreen’e yönlendiriyoruz
       );
     });
   }

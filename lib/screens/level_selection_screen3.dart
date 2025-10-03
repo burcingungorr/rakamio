@@ -61,20 +61,23 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
 
     await _saveLastLevel(index);
 
-    // Yıldız animasyonu göster
+    // ⭐ Yıldız animasyonu göster
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => Center(child: AnimatedStar3()),
     );
 
-    await Future.delayed(const Duration(seconds: 1));
-    Navigator.of(context).pop(); // Diyalogu kapat
+    // ⭐ Biraz daha uzun süre göster (3 saniye)
+    await Future.delayed(const Duration(seconds: 3));
+    Navigator.of(context).pop(); // yıldız kapanır
 
-    // Kalem animasyonunu tetikle
+    // ✏️ Kalemi yeni seviyeye taşı
     setState(() {
+      _currentPage = index + 1 < 30 ? index + 1 : index;
       _animatePencil = false;
     });
+
     Future.delayed(const Duration(milliseconds: 100), () {
       setState(() {
         _animatePencil = true;
@@ -95,17 +98,13 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
       icon = const Icon(Icons.lock, color: Colors.white, size: 40);
     } else if (hasStar) {
       icon = const Icon(Icons.star, color: Colors.yellow, size: 70);
-    } else if (index == _unlockedLevels - 1 && !hasStar) {
-      // aktif seviye (kalem)
+    } else if (index == _currentPage && !hasStar) {
+      // aktif seviye (kalem animasyonu)
       icon = AnimatedAlign(
         alignment: _animatePencil ? Alignment.center : const Alignment(0, -1.5),
         duration: const Duration(seconds: 1),
         curve: Curves.easeOut,
-        child: Image.asset(
-          media.objectImage,
-          width: 50,
-          height: 50,
-        ),
+        child: const Icon(Icons.edit, color: Colors.white, size: 50),
       );
     } else {
       icon = Image.asset(

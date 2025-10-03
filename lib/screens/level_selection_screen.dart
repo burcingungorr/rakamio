@@ -211,6 +211,20 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
               ),
             ),
           ),
+          // Sol alt köşede anasayfa (home) butonu
+       Positioned(
+  left: 20,
+  bottom: 20,
+  child: IconButton(
+    onPressed: () {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    },
+    icon: const Icon(Icons.home, color: Colors.black, size: 45),
+    splashColor: Colors.transparent,  // basınca çıkan efektin şeffaf olmasını sağlar
+    highlightColor: Colors.transparent, // basılıyken efekt
+  ),
+)
+
         ],
       ),
     );

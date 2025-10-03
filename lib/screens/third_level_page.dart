@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/media_model.dart';
 import 'third_level_screen.dart';
-
+ 
 class ThirdLevelPage extends StatefulWidget {
   final int level;
   final VoidCallback onLevelComplete;
@@ -49,10 +49,6 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "${media.number} Elma",
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
             const SizedBox(height: 20),
             Image.asset(
               media.objectImage,

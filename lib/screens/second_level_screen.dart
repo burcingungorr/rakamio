@@ -5,7 +5,7 @@ import '../services/audio_service.dart';
 import '../services/ml_service.dart';
 import '../widgets/signature_canvas.dart';
 import '../utils/constants.dart';
-
+  
 class SecondLevelScreen extends StatefulWidget {
   final int level; // 11’den başlıyor
   final VoidCallback onLevelComplete;
