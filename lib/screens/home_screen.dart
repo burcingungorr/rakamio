@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showInfoModal() {
     showDialog(
       context: context,
-      barrierDismissible: false, // dışarıya tıklayınca kapanmasın
+      barrierDismissible: false, 
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
@@ -63,7 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Sol üstte müzik ikonu
           Positioned(
             top: 40,
             left: 20,
@@ -86,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Sağ üstte bilgi ikonu
           Positioned(
             top: 40,
             right: 20,
@@ -98,7 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Ortada başlat butonu
           Center(
             child: ElevatedButton(
   style: ElevatedButton.styleFrom(
@@ -107,8 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
     padding: const EdgeInsets.all(30),
   ),
   onPressed: () {
-    // Level selection ekranına geçiş
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) =>  LevelSelectionScreen()),
     );

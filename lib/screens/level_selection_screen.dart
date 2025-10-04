@@ -3,43 +3,45 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'first_level_page.dart';
 import 'second_level_screen.dart';
 import 'level_selection_screen2.dart';
-import '../utils/constants.dart';
 
 class LevelSelectionScreen extends StatefulWidget {
+  const LevelSelectionScreen({super.key});
+
   @override
   _LevelSelectionScreenState createState() => _LevelSelectionScreenState();
 }
 
 class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
-  int _currentPage = 0;
-  int _unlockedLevels = 1;
-  Set<int> _starredLevels = {};
+  int _unlockedLevels = 1; 
+  Set<int> _starredLevels = {}; 
   bool _animatePencil = false;
-  bool _canGoNextChapter = false; // 2.bölüme geçiş izni
+  bool _canGoNextChapter = false; 
 
   @override
   void initState() {
     super.initState();
     _loadLastLevel();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _animatePencil = true;
+      Future.delayed(const Duration(milliseconds: 100), () {
+        setState(() {
+          _animatePencil = true;
+        });
       });
     });
   }
 
   Future<void> _loadLastLevel() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    int lastLevel = prefs.getInt('lastLevel') ?? 0;
+    int lastLevelIndex = prefs.getInt('lastLevel') ?? -1; 
+    
     setState(() {
-      _unlockedLevels =
-          lastLevel + 1 > _unlockedLevels ? lastLevel + 1 : _unlockedLevels;
-      _currentPage = lastLevel;
-      if (lastLevel > 0) {
-        _starredLevels = Set.from(List.generate(lastLevel, (index) => index));
+      _unlockedLevels = lastLevelIndex + 2 > 1 ? lastLevelIndex + 2 : 1; 
+      
+      if (lastLevelIndex >= 0) {
+        _starredLevels = Set.from(List.generate(lastLevelIndex + 1, (index) => index));
       }
-      _canGoNextChapter = lastLevel >= 9; // ilk 10 seviye tamamlanmışsa
+      
+      _canGoNextChapter = _unlockedLevels > 10;
     });
   }
 
@@ -50,17 +52,13 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
 
   void _selectLevel(int index) {
     if (index < _unlockedLevels) {
-      setState(() {
-        _currentPage = index;
-      });
-
-      if (index < 10) {
+      if (index < 10) { 
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => FirstLevelPage(
-              level: index + 1,
-              onLevelComplete: () => _onLevelComplete(index),
+              level: index + 1, 
+              onLevelComplete: () => _onLevelComplete(index), 
             ),
           ),
         );
@@ -79,32 +77,41 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
   }
 
   void _onLevelComplete(int index) async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> completedLevels = prefs.getStringList('completedLevels') ?? [];
+    if (!completedLevels.contains(index.toString())) {
+      completedLevels.add(index.toString());
+      await prefs.setStringList('completedLevels', completedLevels);
+    }
     setState(() {
       _starredLevels.add(index);
-      if (_unlockedLevels == index + 1) _unlockedLevels++;
-      if (_unlockedLevels > 10)
-        _canGoNextChapter = true; // 2.bölüme geçiş aktif
+      if (_unlockedLevels == index + 1) {
+        _unlockedLevels++;
+      }
+      if (_unlockedLevels > 10) {
+        _canGoNextChapter = true; 
+      }
     });
-
     await _saveLastLevel(index);
-
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => Center(child: AnimatedStar()),
+      builder: (_) => const Center(child: AnimatedStar()),
     );
+        await Future.delayed(const Duration(seconds: 1));
+    
+    Navigator.of(context).pop(); 
 
-    await Future.delayed(const Duration(seconds: 1));
-    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   Widget _buildLevelDot(int index) {
     bool isUnlocked = index < _unlockedLevels;
     bool hasStar = _starredLevels.contains(index);
+    bool isNextLevel = index == _unlockedLevels - 1; 
 
-    Color bgColor = index < 10
-        ? (isUnlocked ? Colors.orange : Colors.grey)
-        : (isUnlocked ? Colors.green : Colors.grey);
+    Color bgColor = isUnlocked 
+        ? (index < 10 ? Colors.orange : Colors.green)
+        : Colors.grey;
 
     Widget icon;
     if (!isUnlocked) {
@@ -113,7 +120,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
       icon = const Icon(Icons.star, color: Colors.yellow, size: 70);
     } else {
       icon = AnimatedAlign(
-        alignment: _animatePencil ? Alignment.center : Alignment(0, -1.5),
+        alignment: _animatePencil && isNextLevel ? Alignment.center : const Alignment(0, -1.5),
         duration: const Duration(seconds: 1),
         curve: Curves.easeOut,
         child: const Icon(Icons.edit, color: Colors.white, size: 50),
@@ -130,14 +137,15 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
           alignment: Alignment.center,
           children: [
             Container(
+              width: 100,
+              height: 100,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: bgColor,
               ),
-              width: 100,
-              height: 100,
             ),
             icon,
+
           ],
         ),
       ),
@@ -145,22 +153,22 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
   }
 
   Widget _buildConnector(int index) {
-    int dotCount = 5;
+    const int dotCount = 5;
     List<Widget> dots = [];
-    bool isLevelPassed = _starredLevels.contains(index) || index < _currentPage;
+    bool isLevelBeforePassed = _starredLevels.contains(index);
 
     for (int i = 0; i < dotCount; i++) {
-      dots.add(Container(
-        width: 12,
-        height: 12,
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: isLevelPassed
-              ? (index < 10 ? Colors.orange : Colors.green)
-              : Colors.grey[300],
+      dots.add(
+        Container(
+          width: 12,
+          height: 12,
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isLevelBeforePassed ? (index < 10 ? Colors.orange : Colors.green) : Colors.grey[300],
+          ),
         ),
-      ));
+      );
     }
 
     return Column(mainAxisSize: MainAxisSize.min, children: dots);
@@ -168,62 +176,46 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isAfter10 = _unlockedLevels > 10;
+    bool isFirstChapterCompleted = _unlockedLevels > 10;
 
     return Scaffold(
-      backgroundColor: isAfter10 ? Colors.grey[300] : Colors.white,
+      backgroundColor: isFirstChapterCompleted ? Colors.grey[300] : Colors.white,
+
       body: Stack(
         children: [
-          // Seviye listesi ortalanmış
           Center(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 50),
-              itemCount: 10,
+              itemCount: 10, 
               physics: const BouncingScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 List<Widget> children = [];
                 children.add(_buildLevelDot(index));
-                if (index != 9) children.add(_buildConnector(index));
+                if (index != 9) children.add(_buildConnector(index)); 
                 return Column(children: children);
               },
             ),
           ),
-          // Sağ alt köşede sabit ok
           Positioned(
             right: 20,
             bottom: 20,
             child: Opacity(
-              opacity: _canGoNextChapter ? 1.0 : 0.8,
+              opacity: _canGoNextChapter ? 1.0 : 0.5,
               child: IconButton(
                 icon: const Icon(Icons.arrow_forward, size: 50),
-                color: Colors.black, // siyah
+                color: Colors.black,
                 onPressed: _canGoNextChapter
                     ? () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => LevelSelectionScreen2(),
-                          ),
+                          MaterialPageRoute(builder: (_) => LevelSelectionScreen2()),
                         );
                       }
                     : null,
               ),
             ),
           ),
-          // Sol alt köşede anasayfa (home) butonu
-       Positioned(
-  left: 20,
-  bottom: 20,
-  child: IconButton(
-    onPressed: () {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    },
-    icon: const Icon(Icons.home, color: Colors.black, size: 45),
-    splashColor: Colors.transparent,  // basınca çıkan efektin şeffaf olmasını sağlar
-    highlightColor: Colors.transparent, // basılıyken efekt
-  ),
-)
 
         ],
       ),
@@ -232,12 +224,13 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
 }
 
 class AnimatedStar extends StatefulWidget {
+  const AnimatedStar({super.key});
+
   @override
   _AnimatedStarState createState() => _AnimatedStarState();
 }
 
-class _AnimatedStarState extends State<AnimatedStar>
-    with SingleTickerProviderStateMixin {
+class _AnimatedStarState extends State<AnimatedStar> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -245,8 +238,8 @@ class _AnimatedStarState extends State<AnimatedStar>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 800));
-    _scaleAnimation = Tween<double>(begin: 0, end: 1).animate(
+        vsync: this, duration: const Duration(milliseconds: 6000));
+    _scaleAnimation = Tween<double>(begin: 0, end: 2).animate(
         CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
 
     _controller.forward();

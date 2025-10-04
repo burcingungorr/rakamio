@@ -7,7 +7,7 @@ import '../widgets/signature_canvas.dart';
 import '../utils/constants.dart';
   
 class SecondLevelScreen extends StatefulWidget {
-  final int level; // 11’den başlıyor
+  final int level;
   final VoidCallback onLevelComplete;
 
   const SecondLevelScreen({
@@ -30,7 +30,6 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
 
   late String _currentNumber;
 
-  // 2. bölüm için rakamlar; level-11 ile indeksleme
   final List<String> _levelNumbers = [
     '0',
     '1',
@@ -111,10 +110,8 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
       });
       await _audioService.playAudio(AudioFiles.congratulations);
 
-      // Level tamamlandı, bir sonraki seviye aç
       widget.onLevelComplete();
 
-      // ✅ LevelSelectionScreen2’ye dön
       Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
           Navigator.pop(context);
@@ -144,7 +141,6 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
       body: Column(
         children: <Widget>[
           const SizedBox(height: 40),
-          // Üst kısım: solda çarpı, sağda tik
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(

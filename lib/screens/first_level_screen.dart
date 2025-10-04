@@ -1,17 +1,15 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
-import 'package:image_picker/image_picker.dart';
 import '../services/audio_service.dart';
 import '../services/ml_service.dart';
 import '../widgets/signature_canvas.dart';
 import '../utils/constants.dart';
-import 'level_selection_screen.dart';
 
 class FirstLevelScreen extends StatefulWidget {
   final String correctNumber;
   final int level;
-  final VoidCallback onCorrect; // callback
+  final VoidCallback onCorrect; 
 
   const FirstLevelScreen({
     Key? key,
@@ -29,7 +27,6 @@ class _FirstLevelScreenState extends State<FirstLevelScreen> {
   final MLService _mlService = MLService();
   final AudioService _audioService = AudioService();
   final GlobalKey _signatureKey = GlobalKey();
-  final ImagePicker _picker = ImagePicker();
 
   String _prediction = '';
   Uint8List? _selectedImage;
@@ -85,7 +82,6 @@ class _FirstLevelScreenState extends State<FirstLevelScreen> {
     });
   }
 
-  // Rakam ipucu widget (ortada)
   Widget _buildHint() {
     return Text(
       widget.correctNumber,
@@ -101,7 +97,7 @@ class _FirstLevelScreenState extends State<FirstLevelScreen> {
       {required IconData icon, required VoidCallback onPressed}) {
     return Container(
       decoration: BoxDecoration(
-        color: AppConstants.primaryColor, // turuncu arka plan
+        color: AppConstants.primaryColor, 
         borderRadius: BorderRadius.circular(15),
       ),
       child: IconButton(
@@ -118,14 +114,13 @@ class _FirstLevelScreenState extends State<FirstLevelScreen> {
       body: Column(
         children: <Widget>[
           const SizedBox(height: 40),
-          // Üst kısım: solda çarpı, ortada rakam, sağda tik
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildIconButton(icon: Icons.clear, onPressed: _clearCanvas),
-                _buildHint(), // ortada rakam, arka plan yok
+                _buildHint(), 
                 _buildIconButton(icon: Icons.check, onPressed: _predictDigit),
               ],
             ),

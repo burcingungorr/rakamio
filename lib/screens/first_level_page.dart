@@ -7,7 +7,7 @@ import 'first_level_screen.dart';
 
 class FirstLevelPage extends StatefulWidget {
   final int level;
-  final VoidCallback onLevelComplete; // ← Yeni
+  final VoidCallback onLevelComplete;
 
   const FirstLevelPage(
       {Key? key, required this.level, required this.onLevelComplete})
@@ -38,12 +38,10 @@ class _FirstLevelPageState extends State<FirstLevelPage> {
     _correctNumber = selectedMedia.number;
     _selectedAudio = selectedMedia.audio!;
 
-    // Görseli gösterdikten 0.5 saniye sonra rakam sesi çal
     Future.delayed(const Duration(milliseconds: 500), () {
       _audioService.playAudio(_selectedAudio);
     });  
 
-    // Splash ekran süresi tamamlanınca FirstLevelScreen'e geç
     Timer(AppConstants.splashDuration, () {
       Navigator.pushReplacement(
         context,
@@ -51,7 +49,7 @@ class _FirstLevelPageState extends State<FirstLevelPage> {
           builder: (context) => FirstLevelScreen(
             correctNumber: _correctNumber,
             level: widget.level,
-            onCorrect: widget.onLevelComplete, // callback
+            onCorrect: widget.onLevelComplete, 
           ),
         ),
       );

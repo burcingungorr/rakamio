@@ -11,7 +11,7 @@ import '../utils/constants.dart';
 class ThirdLevelScreen extends StatefulWidget {
   final String correctNumber;
   final int level;
-  final VoidCallback onCorrect; // callback
+  final VoidCallback onCorrect; 
 
   const ThirdLevelScreen({
     Key? key,
@@ -68,7 +68,7 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => LevelSelectionScreen3()),
-        (route) => false, // tüm önceki ekranlar silinir
+        (route) => false, 
       );
     } else {
       setState(() {
@@ -93,7 +93,7 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
       {required IconData icon, required VoidCallback onPressed}) {
     return Container(
       decoration: BoxDecoration(
-        color: AppConstants.primaryColor, // turuncu arka plan
+        color: AppConstants.primaryColor, 
         borderRadius: BorderRadius.circular(15),
       ),
       child: IconButton(
@@ -110,7 +110,6 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
       body: Column(
         children: <Widget>[
           const SizedBox(height: 40),
-          // Üst kısım: solda çarpı, ortada rakam, sağda tik
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(

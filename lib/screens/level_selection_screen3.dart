@@ -9,38 +9,40 @@ class LevelSelectionScreen3 extends StatefulWidget {
 }
 
 class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
-  int _currentPage = 20; // 3. bölüm 21. seviyeden başlıyor
-  int _unlockedLevels = 21; // 21. seviye açık
+  int _currentPage = 30;
+  int _unlockedLevels = 30;
   Set<int> _starredLevels = {};
   bool _animatePencil = true;
 
   @override
   void initState() {
     super.initState();
-    _loadLastLevel();
+    _loadProgress();
   }
 
-  Future<void> _loadLastLevel() async {
+  Future<void> _loadProgress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    int lastLevel = prefs.getInt('lastLevel') ?? 20;
+    int lastLevel = prefs.getInt('lastLevel3') ?? 29;
+
     setState(() {
-      _unlockedLevels =
-          lastLevel + 1 > _unlockedLevels ? lastLevel + 1 : _unlockedLevels;
-      _currentPage = lastLevel >= 20 ? lastLevel : 20;
-      if (lastLevel >= 20) {
-        _starredLevels =
-            Set.from(List.generate(lastLevel - 20 + 1, (index) => index + 20));
+      _unlockedLevels = lastLevel + 1;
+      _currentPage = lastLevel + 1;
+      
+      if (lastLevel >= 30) {
+        for (int i = 30; i <= lastLevel; i++) {
+          _starredLevels.add(i);
+        }
       }
     });
   }
 
   Future<void> _saveLastLevel(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('lastLevel', index);
+    await prefs.setInt('lastLevel3', index);
   }
 
   void _selectLevel(int index) {
-    if (index < _unlockedLevels) {
+    if (index <= _unlockedLevels) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -54,63 +56,61 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
   }
 
   void _onLevelComplete(int index) async {
-    setState(() {
-      _starredLevels.add(index);
-      if (_unlockedLevels == index + 1) _unlockedLevels++;
-    });
-
     await _saveLastLevel(index);
+    
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) {
+          Future.delayed(const Duration(seconds: 1), () {
+            if (Navigator.canPop(dialogContext)) {
+              Navigator.pop(dialogContext);
+            }
+          });
 
-    // ⭐ Yıldız animasyonu göster
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => Center(child: AnimatedStar3()),
-    );
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Center(child: AnimatedStar3()),
+          );
+        },
+      ).then((_) {
+        if (mounted) {
+          setState(() {
+            _starredLevels.add(index);
+            _unlockedLevels = index + 1;
+            _currentPage = index + 1;
+            _animatePencil = false;
+          });
 
-    // ⭐ Biraz daha uzun süre göster (3 saniye)
-    await Future.delayed(const Duration(seconds: 3));
-    Navigator.of(context).pop(); // yıldız kapanır
-
-    // ✏️ Kalemi yeni seviyeye taşı
-    setState(() {
-      _currentPage = index + 1 < 30 ? index + 1 : index;
-      _animatePencil = false;
-    });
-
-    Future.delayed(const Duration(milliseconds: 100), () {
-      setState(() {
-        _animatePencil = true;
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (mounted) {
+              setState(() {
+                _animatePencil = true;
+              });
+            }
+          });
+        }
       });
-    });
+    }
   }
 
   Widget _buildLevelDot(int index) {
-    bool isUnlocked = index < _unlockedLevels;
+    bool isUnlocked = index <= _unlockedLevels;
     bool hasStar = _starredLevels.contains(index);
     Color bgColor = isUnlocked ? Colors.purple : Colors.grey;
-
-    final mediaIndex = index - 20;
-    final media = MediaData.mediaList[mediaIndex];
 
     Widget icon;
     if (!isUnlocked) {
       icon = const Icon(Icons.lock, color: Colors.white, size: 40);
     } else if (hasStar) {
       icon = const Icon(Icons.star, color: Colors.yellow, size: 70);
-    } else if (index == _currentPage && !hasStar) {
-      // aktif seviye (kalem animasyonu)
+    } else {
       icon = AnimatedAlign(
         alignment: _animatePencil ? Alignment.center : const Alignment(0, -1.5),
         duration: const Duration(seconds: 1),
         curve: Curves.easeOut,
         child: const Icon(Icons.edit, color: Colors.white, size: 50),
-      );
-    } else {
-      icon = Image.asset(
-        media.objectImage,
-        width: 50,
-        height: 50,
       );
     }
 
@@ -143,7 +143,7 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
   Widget _buildConnector(int index) {
     int dotCount = 5;
     List<Widget> dots = [];
-    bool isLevelPassed = _starredLevels.contains(index) || index < _currentPage;
+    bool isLevelPassed = _starredLevels.contains(index);
 
     for (int i = 0; i < dotCount; i++) {
       dots.add(Container(
@@ -163,20 +163,25 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.pink[50],
-      body: Center(
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 50),
-          itemCount: 10,
-          physics: const BouncingScrollPhysics(),
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            int levelIndex = 20 + index; // 21–30
-            List<Widget> children = [];
-            children.add(_buildLevelDot(levelIndex));
-            if (index != 9) children.add(_buildConnector(levelIndex));
-            return Column(children: children);
-          },
-        ),
+      body: Stack(
+        children: [
+          Center(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 50),
+              itemCount: 10,
+              physics: const BouncingScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                int levelIndex = 30 + index;
+                List<Widget> children = [];
+                children.add(_buildLevelDot(levelIndex));
+                if (index != 9) children.add(_buildConnector(levelIndex));
+                return Column(children: children);
+              },
+            ),
+          ),
+
+        ],
       ),
     );
   }
@@ -196,9 +201,12 @@ class _AnimatedStar3State extends State<AnimatedStar3>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 800));
-    _scaleAnimation = Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _scaleAnimation = Tween<double>(begin: 0, end: 1.5).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+    );
     _controller.forward();
   }
 
@@ -212,7 +220,7 @@ class _AnimatedStar3State extends State<AnimatedStar3>
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: _scaleAnimation,
-      child: const Icon(Icons.star, color: Colors.yellow, size: 100),
+      child: const Icon(Icons.star, color: Colors.yellow, size: 120),
     );
   }
 }

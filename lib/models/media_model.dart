@@ -1,8 +1,8 @@
 class MediaModel {
-  final String image; // normal image
-  final String objectImage; // elma görseli
-  final String? audio;
-  final String number;
+  final String image; 
+  final String objectImage; 
+  final String? audio; 
+  final String number; 
 
   MediaModel({
     required this.image,
@@ -15,116 +15,116 @@ class MediaModel {
 class MediaData {
   static final List<MediaModel> mediaList = [
     MediaModel(
-      image: 'assets/sifir.jpg',
-      objectImage: 'assets/0elma.jpg',
-      audio: 'sifir.mp3',
+      image: 'assets/images/sifir.jpg',
+      objectImage: 'assets/images/0elma.jpg',
+      audio: 'assets/audios/sifir.mp3',
       number: '0',
     ),
     MediaModel(
-      image: 'assets/bir.jpg',
-      objectImage: 'assets/1elma.jpg',
-      audio: 'bir.mp3',
+      image: 'assets/images/bir.jpg',
+      objectImage: 'assets/images/1elma.jpg',
+      audio: 'assets/audios/bir.mp3',
       number: '1',
     ),
     MediaModel(
-      image: 'assets/iki.jpg',
-      objectImage: 'assets/2elma.jpg',
-      audio: 'iki.mp3',
+      image: 'assets/images/iki.jpg',
+      objectImage: 'assets/images/2elma.jpg',
+      audio: 'assets/audios/iki.mp3',
       number: '2',
     ),
     MediaModel(
-      image: 'assets/uc.jpg',
-      objectImage: 'assets/3elma.jpg',
-      audio: 'uc.mp3',
+      image: 'assets/images/uc.jpg',
+      objectImage: 'assets/images/3elma.jpg',
+      audio: 'assets/audios/uc.mp3',
       number: '3',
     ),
     MediaModel(
-      image: 'assets/dort.jpg',
-      objectImage: 'assets/4elma.jpg',
-      audio: 'dort.mp3',
+      image: 'assets/images/dort.jpg',
+      objectImage: 'assets/images/4elma.jpg',
+      audio: 'assets/audios/dort.mp3',
       number: '4',
     ),
     MediaModel(
-      image: 'assets/bes.jpg',
-      objectImage: 'assets/5elma.jpg',
-      audio: 'bes.mp3',
+      image: 'assets/images/bes.jpg',
+      objectImage: 'assets/images/5elma.jpg',
+      audio: 'assets/audios/bes.mp3',
       number: '5',
     ),
     MediaModel(
-      image: 'assets/alti.jpg',
-      objectImage: 'assets/6elma.jpg',
-      audio: 'alti.mp3',
+      image: 'assets/images/alti.jpg',
+      objectImage: 'assets/images/6elma.jpg',
+      audio: 'assets/audios/alti.mp3',
       number: '6',
     ),
     MediaModel(
-      image: 'assets/yedi.jpg',
-      objectImage: 'assets/7elma.jpg',
-      audio: 'yedi.mp3',
+      image: 'assets/images/yedi.jpg',
+      objectImage: 'assets/images/7elma.jpg',
+      audio: 'assets/audios/yedi.mp3',
       number: '7',
     ),
     MediaModel(
-      image: 'assets/sekiz.jpg',
-      objectImage: 'assets/8elma.jpg',
-      audio: 'sekiz.mp3',
+      image: 'assets/images/sekiz.jpg',
+      objectImage: 'assets/images/8elma.jpg',
+      audio: 'assets/audios/sekiz.mp3',
       number: '8',
     ),
     MediaModel(
-      image: 'assets/dokuz.jpg',
-      objectImage: 'assets/9elma.jpg',
-      audio: 'dokuz.mp3',
+      image: 'assets/images/dokuz.jpg',
+      objectImage: 'assets/images/9elma.jpg',
+      audio: 'assets/audios/dokuz.mp3',
       number: '9',
     ),
   ];
 
   static final List<MediaModel> mediaListWithoutAudio = [
     MediaModel(
-      image: 'assets/sifir.jpg',
-      objectImage: 'assets/0elma.jpg',
+      image: 'assets/images/sifir.jpg',
+      objectImage: 'assets/images/0elma.jpg',
       number: '0',
     ),
     MediaModel(
-      image: 'assets/bir.jpg',
-      objectImage: 'assets/1elma.jpg',
+      image: 'assets/images/bir.jpg',
+      objectImage: 'assets/images/1elma.jpg',
       number: '1',
     ),
     MediaModel(
-      image: 'assets/iki.jpg',
-      objectImage: 'assets/2elma.jpg',
+      image: 'assets/images/iki.jpg',
+      objectImage: 'assets/images/2elma.jpg',
       number: '2',
     ),
     MediaModel(
-      image: 'assets/uc.jpg',
-      objectImage: 'assets/3elma.jpg',
+      image: 'assets/images/uc.jpg',
+      objectImage: 'assets/images/3elma.jpg',
       number: '3',
     ),
     MediaModel(
-      image: 'assets/dort.jpg',
-      objectImage: 'assets/4elma.jpg',
+      image: 'assets/images/dort.jpg',
+      objectImage: 'assets/images/4elma.jpg',
       number: '4',
     ),
     MediaModel(
-      image: 'assets/bes.jpg',
-      objectImage: 'assets/5elma.jpg',
+      image: 'assets/images/bes.jpg',
+      objectImage: 'assets/images/5elma.jpg',
       number: '5',
     ),
     MediaModel(
-      image: 'assets/alti.jpg',
-      objectImage: 'assets/6elma.jpg',
+      image: 'assets/images/alti.jpg',
+      objectImage: 'assets/images/6elma.jpg',
       number: '6',
     ),
     MediaModel(
-      image: 'assets/yedi.jpg',
-      objectImage: 'assets/7elma.jpg',
+      image: 'assets/images/yedi.jpg',
+      objectImage: 'assets/images/7elma.jpg',
       number: '7',
     ),
     MediaModel(
-      image: 'assets/sekiz.jpg',
-      objectImage: 'assets/8elma.jpg',
+      image: 'assets/images/sekiz.jpg',
+      objectImage: 'assets/images/8elma.jpg',
       number: '8',
     ),
     MediaModel(
-      image: 'assets/dokuz.jpg',
-      objectImage: 'assets/9elma.jpg',
+      image: 'assets/images/dokuz.jpg',
+      objectImage: 'assets/images/9elma.jpg',
       number: '9',
     ),
   ];

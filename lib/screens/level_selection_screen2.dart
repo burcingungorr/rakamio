@@ -10,11 +10,11 @@ class LevelSelectionScreen2 extends StatefulWidget {
 }
 
 class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
-  int _currentPage = 10; // 2. bölüm 11. seviyeden başlıyor
-  int _unlockedLevels = 11; // Sadece 11. seviye açık olarak başlar
+  int _currentPage = 10; 
+  int _unlockedLevels = 11;
   Set<int> _starredLevels = {};
   bool _animatePencil = false;
-  bool _canGoNextChapter = false; // 3.bölüme geçiş izni
+  bool _canGoNextChapter = false; 
 
   @override
   void initState() {
@@ -34,13 +34,13 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
     setState(() {
       _unlockedLevels =
           lastLevel + 1 > _unlockedLevels ? lastLevel + 1 : _unlockedLevels;
-      _currentPage = lastLevel >= 10 ? lastLevel : 10; // 2. bölüm başlangıç
+      _currentPage = lastLevel >= 10 ? lastLevel : 10; 
       if (lastLevel >= 10) {
         _starredLevels =
             Set.from(List.generate(lastLevel - 10 + 1, (index) => index + 10));
       }
       _canGoNextChapter =
-          lastLevel >= 19; // 2. bölümün 10 seviyesi tamamlanmışsa (10-19)
+          lastLevel >= 19;
     });
   }
 
@@ -54,7 +54,6 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
       setState(() {
         _currentPage = index;
       });
-
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -68,50 +67,48 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
   }
 
   void _onLevelComplete(int index) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String> completedLevels = prefs.getStringList('completedLevels') ?? [];
+  if (!completedLevels.contains(index.toString())) {
+    completedLevels.add(index.toString());
+    await prefs.setStringList('completedLevels', completedLevels);
+  }
 
-    // Tamamlanan seviyeyi listeye ekle
-    List<String> completedLevels = prefs.getStringList('completedLevels') ?? [];
-    if (!completedLevels.contains(index.toString())) {
-      completedLevels.add(index.toString());
-      await prefs.setStringList('completedLevels', completedLevels);
-    }
+  setState(() {
+    _starredLevels.add(index);
+    if (_unlockedLevels == index + 1) _unlockedLevels++;
+    if (_unlockedLevels > 10) _canGoNextChapter = true;
+  });
 
-    setState(() {
-      _starredLevels.add(index);
-      if (_unlockedLevels == index + 1) _unlockedLevels++;
-      if (_unlockedLevels > 20) _canGoNextChapter = true;
-    });
+  await _saveLastLevel(index);
 
-    await _saveLastLevel(index);
+  Navigator.of(context).pop(); 
 
+  Future.delayed(const Duration(milliseconds: 300), () {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => Center(child: AnimatedStar2()),
+      builder: (_) =>  Center(child: AnimatedStar2()),
     );
 
-    await Future.delayed(const Duration(seconds: 1));
-    // Bu ekranda kalması için Navigator kullanmayın, sadece dialog'u kapatın
-    Navigator.of(context).pop(); // Sadece dialog'u kapat
-  }
+    Future.delayed(const Duration(seconds: 1), () {
+      Navigator.of(context).pop();
+    });
+  });
+}
+
 
   Widget _buildLevelDot(int index) {
     bool isUnlocked = index < _unlockedLevels;
     bool hasStar = _starredLevels.contains(index);
-
-    // 2. bölüm için mavi renk
     Color bgColor = isUnlocked ? Colors.blue : Colors.grey;
 
     Widget icon;
     if (!isUnlocked) {
-      // 🔒 kilit
       icon = const Icon(Icons.lock, color: Colors.white, size: 40);
     } else if (hasStar) {
-      // ⭐ geçmiş seviye
       icon = const Icon(Icons.star, color: Colors.yellow, size: 70);
     } else if (index == _unlockedLevels - 1) {
-      // ✏️ şu anki aktif seviye
       icon = AnimatedAlign(
         alignment: _animatePencil ? Alignment.center : const Alignment(0, -1.5),
         duration: const Duration(seconds: 1),
@@ -119,7 +116,6 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
         child: const Icon(Icons.edit, color: Colors.white, size: 50),
       );
     } else {
-      // güvenlik için (normalde buraya düşmez)
       icon = const Icon(Icons.help_outline, color: Colors.white, size: 40);
     }
 
@@ -162,7 +158,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color:
-              isLevelPassed ? Colors.blue : Colors.grey[300], // Mavi bağlayıcı
+              isLevelPassed ? Colors.blue : Colors.grey[300], 
         ),
       ));
     }
@@ -173,11 +169,10 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.yellow, // Açık mavi arka plan
+      backgroundColor: Colors.yellow,
 
       body: Stack(
         children: [
-          // Seviye listesi ortalanmış
           Center(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 50),
@@ -186,13 +181,12 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 List<Widget> children = [];
-                children.add(_buildLevelDot(index + 10)); // 11–20
+                children.add(_buildLevelDot(index + 10)); 
                 if (index != 9) children.add(_buildConnector(index + 10));
                 return Column(children: children);
               },
             ),
           ),
-          // Sağ alt köşede sabit ok (3. bölüm için)
           Positioned(
             right: 20,
             bottom: 20,
@@ -200,7 +194,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
               opacity: _canGoNextChapter ? 1.0 : 0.8,
               child: IconButton(
                 icon: const Icon(Icons.arrow_forward, size: 50),
-                color: Colors.black, // siyah
+                color: Colors.black, 
                 onPressed: _canGoNextChapter
                     ? () {
                         Navigator.push(
@@ -214,8 +208,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
               ),
             ),
           ),
-          // Geri dönüş oku (sol üst köşe)
-         
+      
         ],
       ),
     );

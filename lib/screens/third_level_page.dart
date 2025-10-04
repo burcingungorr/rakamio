@@ -29,8 +29,8 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
             level: widget.level,
             correctNumber: MediaData
                 .mediaList[widget.level % MediaData.mediaList.length]
-                .number, // doğru rakam
-            onCorrect: widget.onLevelComplete, // callback doğru geçiyor
+                .number,
+            onCorrect: widget.onLevelComplete, 
           ),
         ),
       );
@@ -39,7 +39,6 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Fix: Use modulo to map level to correct index
     final mediaIndex = widget.level % MediaData.mediaList.length;
     final media = MediaData.mediaList[mediaIndex];
 
