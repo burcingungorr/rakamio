@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Positioned(
             bottom: 15,
             child: Image.asset(
-              'assets/1.png',
+              'assets/images/1.png',
               fit: BoxFit.cover,
               width: MediaQuery.of(context).size.width,
             ),
