@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/media_model.dart';
 import 'third_level_page.dart';
+import '../services/audio_service.dart';
 
 class LevelSelectionScreen3 extends StatefulWidget {
   @override
@@ -13,6 +13,8 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
   int _unlockedLevels = 30;
   Set<int> _starredLevels = {};
   bool _animatePencil = true;
+
+  final AudioService _audioService = AudioService(); 
 
   @override
   void initState() {
@@ -27,7 +29,7 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
     setState(() {
       _unlockedLevels = lastLevel + 1;
       _currentPage = lastLevel + 1;
-      
+
       if (lastLevel >= 30) {
         for (int i = 30; i <= lastLevel; i++) {
           _starredLevels.add(i);
@@ -51,13 +53,15 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
             onLevelComplete: () => _onLevelComplete(index),
           ),
         ),
-      );
+      ).then((result) {
+
+      });
     }
   }
 
   void _onLevelComplete(int index) async {
     await _saveLastLevel(index);
-    
+
     if (mounted) {
       showDialog(
         context: context,
@@ -180,10 +184,15 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
               },
             ),
           ),
-
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _audioService.dispose(); 
+    super.dispose();
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'level_selection_screen.dart';
 import '../utils/constants.dart';
+import '../services/audio_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -11,11 +12,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isMusicOn = true;
+  final AudioService _audioService = AudioService();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (isMusicOn) {
+        _audioService.playAudio(AudioFiles.lets);
+      }
+    });
+  }
 
   void _showInfoModal() {
     showDialog(
       context: context,
-      barrierDismissible: false, 
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
@@ -98,20 +110,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
           Center(
             child: ElevatedButton(
-  style: ElevatedButton.styleFrom(
-    shape: const CircleBorder(),
-    backgroundColor: AppConstants.primaryColor,
-    padding: const EdgeInsets.all(30),
-  ),
-  onPressed: () {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) =>  LevelSelectionScreen()),
-    );
-  },
-  child: const Icon(Icons.play_arrow, size: 50, color: Colors.white),
-),
-
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                backgroundColor: AppConstants.primaryColor,
+                padding: const EdgeInsets.all(30),
+              ),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  LevelSelectionScreen()),
+                );
+              },
+              child: const Icon(Icons.play_arrow, size: 50, color: Colors.white),
+            ),
           ),
         ],
       ),

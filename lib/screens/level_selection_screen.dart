@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/audio_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'first_level_page.dart';
 import 'second_level_screen.dart';
 import 'level_selection_screen2.dart';
+import '../utils/constants.dart' as constants;
 
 class LevelSelectionScreen extends StatefulWidget {
   const LevelSelectionScreen({super.key});
@@ -16,6 +18,9 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
   Set<int> _starredLevels = {}; 
   bool _animatePencil = false;
   bool _canGoNextChapter = false; 
+
+  final AudioService _audioService = AudioService();
+
 
   @override
   void initState() {
@@ -75,6 +80,22 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
       }
     }
   }
+void _playNumberAudio(int number) {
+  switch (number) {
+    case 0: _audioService.playAudio(constants.AudioFiles.zero); break;
+    case 1: _audioService.playAudio(constants.AudioFiles.one); break;
+    case 2: _audioService.playAudio(constants.AudioFiles.two); break;
+    case 3: _audioService.playAudio(constants.AudioFiles.three); break;
+    case 4: _audioService.playAudio(constants.AudioFiles.four); break;
+    case 5: _audioService.playAudio(constants.AudioFiles.five); break;
+    case 6: _audioService.playAudio(constants.AudioFiles.six); break;
+    case 7: _audioService.playAudio(constants.AudioFiles.seven); break;
+    case 8: _audioService.playAudio(constants.AudioFiles.eight); break;
+    case 9: _audioService.playAudio(constants.AudioFiles.nine); break;
+  }
+}
+
+
 
   void _onLevelComplete(int index) async {
         SharedPreferences prefs = await SharedPreferences.getInstance();

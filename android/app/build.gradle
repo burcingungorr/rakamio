@@ -46,11 +46,13 @@ android {
         minSdkVersion 26
     }
 
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.debug
-        }
+  buildTypes {
+    release {
+        signingConfig = signingConfigs.debug
+        minifyEnabled false
+        shrinkResources false
     }
+}
 }
 
 

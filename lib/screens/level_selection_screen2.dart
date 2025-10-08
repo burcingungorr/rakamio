@@ -1,30 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'level_selection_screen3.dart';
 import 'second_level_screen.dart';
+import 'level_selection_screen3.dart';
 import '../utils/constants.dart';
+import '../services/audio_service.dart';
 
 class LevelSelectionScreen2 extends StatefulWidget {
   @override
   _LevelSelectionScreen2State createState() => _LevelSelectionScreen2State();
 }
 
-class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
-  int _currentPage = 10; 
+class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
+    with SingleTickerProviderStateMixin {
+  int _currentPage = 10;
   int _unlockedLevels = 11;
   Set<int> _starredLevels = {};
   bool _animatePencil = false;
-  bool _canGoNextChapter = false; 
+  bool _canGoNextChapter = false;
+
+  final AudioService _audioService = AudioService();
+
+  late AnimationController _speakerController;
+  late Animation<double> _speakerAnimation;
+
+  bool _showSpeakerWarning = false;
 
   @override
   void initState() {
     super.initState();
     _loadLastLevel();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _animatePencil = true;
-      });
+    _speakerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _speakerAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(parent: _speakerController, curve: Curves.easeInOut),
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      setState(() => _animatePencil = true);
+      _showSoundWarning(); 
+      _audioService.playAudio(AudioFiles.write); 
+    });
+  }
+
+  @override
+  void dispose() {
+    _speakerController.dispose();
+    _audioService.dispose();
+    super.dispose();
+  }
+
+  Future<void> _showSoundWarning() async {
+    setState(() {
+      _showSpeakerWarning = true;
+    });
+    _speakerController.repeat(reverse: true);
+
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted) {
+        setState(() => _showSpeakerWarning = false);
+        _speakerController.stop();
+      }
     });
   }
 
@@ -34,13 +73,12 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
     setState(() {
       _unlockedLevels =
           lastLevel + 1 > _unlockedLevels ? lastLevel + 1 : _unlockedLevels;
-      _currentPage = lastLevel >= 10 ? lastLevel : 10; 
+      _currentPage = lastLevel >= 10 ? lastLevel : 10;
       if (lastLevel >= 10) {
         _starredLevels =
             Set.from(List.generate(lastLevel - 10 + 1, (index) => index + 10));
       }
-      _canGoNextChapter =
-          lastLevel >= 19;
+      _canGoNextChapter = lastLevel >= 19;
     });
   }
 
@@ -51,9 +89,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
 
   void _selectLevel(int index) {
     if (index < _unlockedLevels) {
-      setState(() {
-        _currentPage = index;
-      });
+      setState(() => _currentPage = index);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -67,36 +103,33 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
   }
 
   void _onLevelComplete(int index) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  List<String> completedLevels = prefs.getStringList('completedLevels') ?? [];
-  if (!completedLevels.contains(index.toString())) {
-    completedLevels.add(index.toString());
-    await prefs.setStringList('completedLevels', completedLevels);
-  }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> completedLevels = prefs.getStringList('completedLevels') ?? [];
+    if (!completedLevels.contains(index.toString())) {
+      completedLevels.add(index.toString());
+      await prefs.setStringList('completedLevels', completedLevels);
+    }
 
-  setState(() {
-    _starredLevels.add(index);
-    if (_unlockedLevels == index + 1) _unlockedLevels++;
-    if (_unlockedLevels > 10) _canGoNextChapter = true;
-  });
-
-  await _saveLastLevel(index);
-
-  Navigator.of(context).pop(); 
-
-  Future.delayed(const Duration(milliseconds: 300), () {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) =>  Center(child: AnimatedStar2()),
-    );
-
-    Future.delayed(const Duration(seconds: 1), () {
-      Navigator.of(context).pop();
+    setState(() {
+      _starredLevels.add(index);
+      if (_unlockedLevels == index + 1) _unlockedLevels++;
+      if (_unlockedLevels > 10) _canGoNextChapter = true;
     });
-  });
-}
 
+    await _saveLastLevel(index);
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: AnimatedStar2()),
+      );
+
+      Future.delayed(const Duration(seconds: 1), () {
+        Navigator.of(context).pop();
+      });
+    });
+  }
 
   Widget _buildLevelDot(int index) {
     bool isUnlocked = index < _unlockedLevels;
@@ -157,8 +190,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
         margin: const EdgeInsets.symmetric(vertical: 6),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color:
-              isLevelPassed ? Colors.blue : Colors.grey[300], 
+          color: isLevelPassed ? Colors.blue : Colors.grey[300],
         ),
       ));
     }
@@ -170,7 +202,6 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.yellow,
-
       body: Stack(
         children: [
           Center(
@@ -181,12 +212,13 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 List<Widget> children = [];
-                children.add(_buildLevelDot(index + 10)); 
+                children.add(_buildLevelDot(index + 10));
                 if (index != 9) children.add(_buildConnector(index + 10));
                 return Column(children: children);
               },
             ),
           ),
+
           Positioned(
             right: 20,
             bottom: 20,
@@ -194,21 +226,33 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
               opacity: _canGoNextChapter ? 1.0 : 0.8,
               child: IconButton(
                 icon: const Icon(Icons.arrow_forward, size: 50),
-                color: Colors.black, 
+                color: Colors.black,
                 onPressed: _canGoNextChapter
                     ? () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => LevelSelectionScreen3(),
-                          ),
+                              builder: (_) => LevelSelectionScreen3()),
                         );
                       }
                     : null,
               ),
             ),
           ),
-      
+
+          if (_showSpeakerWarning)
+            Positioned(
+              top: 40,
+              right: 20,
+              child: ScaleTransition(
+                scale: _speakerAnimation,
+                child: const Icon(
+                  Icons.volume_up,
+                  color: Colors.black,
+                  size: 36,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -216,6 +260,8 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2> {
 }
 
 class AnimatedStar2 extends StatefulWidget {
+  const AnimatedStar2({Key? key}) : super(key: key);
+
   @override
   _AnimatedStar2State createState() => _AnimatedStar2State();
 }
@@ -229,10 +275,9 @@ class _AnimatedStar2State extends State<AnimatedStar2>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 6000));
+        vsync: this, duration: const Duration(milliseconds: 600));
     _scaleAnimation = Tween<double>(begin: 0, end: 2).animate(
         CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
-
     _controller.forward();
   }
 

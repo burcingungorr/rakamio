@@ -17,21 +17,23 @@ class AppConstants {
 }
 
 class AudioFiles {
-  static const String levelSelection = 'seviyenisec.mp3';
-  static const String timeUp = 'surebitmeden.mp3';
-  static const String congratulations = 'tebrikler.mp3';
-  static const String tryAgain = 'tekrardenemelisin.mp3';
-  static const String writeWhatYouKnow = 'bildikleriniyaz.mp3';
+  static const String levelSelection = 'audios/seviyenisec.mp3';
+  static const String timeUp = 'audios/surebitmeden.mp3';
+  static const String congratulations = 'audios/tebrikler.mp3';
+  static const String tryAgain = 'audios/tekrar.mp3';
+  static const String writeWhatYouKnow = 'audios/bildikleriniyaz.mp3';
+  static const String write = 'audios/duydugun.mp3';
+  static const String lets = 'audios/haydibutonabas.mp3';
+  static const String how = 'audios/sencekactane.mp3';
 
-  // Number audio files
-  static const String zero = 'sifir.mp3';
-  static const String one = 'bir.mp3';
-  static const String two = 'iki.mp3';
-  static const String three = 'uc.mp3';
-  static const String four = 'dort.mp3';
-  static const String five = 'bes.mp3';
-  static const String six = 'alti.mp3';
-  static const String seven = 'yedi.mp3';
-  static const String eight = 'sekiz.mp3';
-  static const String nine = 'dokuz.mp3';
+  static const String zero = 'audios/sifir.mp3';
+  static const String one = 'audios/bir.mp3';
+  static const String two = 'audios/iki.mp3';
+  static const String three = 'audios/uc.mp3';
+  static const String four = 'audios/dort.mp3';
+  static const String five = 'audios/bes.mp3';
+  static const String six = 'audios/alti.mp3';
+  static const String seven = 'audios/yedi.mp3';
+  static const String eight = 'audios/sekiz.mp3';
+  static const String nine = 'audios/dokuz.mp3';
 }

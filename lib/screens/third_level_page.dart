@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/media_model.dart';
 import 'third_level_screen.dart';
- 
+import '../services/audio_service.dart';
+import '../utils/constants.dart';
+
 class ThirdLevelPage extends StatefulWidget {
   final int level;
   final VoidCallback onLevelComplete;
@@ -18,11 +20,17 @@ class ThirdLevelPage extends StatefulWidget {
 }
 
 class _ThirdLevelPageState extends State<ThirdLevelPage> {
+  final AudioService _audioService = AudioService();
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _audioService.playAudio(AudioFiles.how);  
+    });
+
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => ThirdLevelScreen(
@@ -30,10 +38,17 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
             correctNumber: MediaData
                 .mediaList[widget.level % MediaData.mediaList.length]
                 .number,
-            onCorrect: widget.onLevelComplete, 
+            onCorrect: () {
+              widget.onLevelComplete();
+              Navigator.pop(context, true);
+            },
           ),
         ),
-      );
+      ).then((result) {
+        if (result == false) {
+          _audioService.playAudio(AudioFiles.tryAgain); 
+        }
+      });
     });
   }
 
@@ -45,18 +60,18 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
     return Scaffold(
       backgroundColor: Colors.pink[100],
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            Image.asset(
-              media.objectImage,
-              width: 250,
-              height: 250,
-            ),
-          ],
+        child: Image.asset(
+          media.objectImage,
+          width: 250,
+          height: 250,
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _audioService.dispose();
+    super.dispose();
   }
 }
