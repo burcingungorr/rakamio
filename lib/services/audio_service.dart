@@ -8,7 +8,6 @@ class AudioService {
   AudioPlayer? _audioPlayer;
 
   Future<void> playAudio(String audioFile) async {
-    try {
       if (_audioPlayer != null) {
         await _audioPlayer!.stop();
         await _audioPlayer!.dispose();
@@ -19,9 +18,7 @@ class AudioService {
       await _audioPlayer!.play(AssetSource(audioFile));
       await _audioPlayer!.onPlayerComplete.first;
       
-    } catch (e) {
-      print('Error playing audio: $e');
-    }
+  
   }
 
   void dispose() {

@@ -17,12 +17,9 @@ class MLService {
   bool get isModelLoaded => _isModelLoaded;
 
   Future<void> loadModel() async {
-    try {
       _interpreter = await Interpreter.fromAsset(AppConstants.modelAssetPath);
       _isModelLoaded = true;
-    } catch (e) {
-      print('Error loading model: $e');
-    }
+ 
   }
 
   Future<String> predictDigit(GlobalKey signatureKey,
@@ -41,19 +38,16 @@ class MLService {
           await image.toByteData(format: ui.ImageByteFormat.png);
 
       if (byteData == null) {
-        print('Byte data is null');
         return '';
       }
       imageData = byteData.buffer.asUint8List();
     }
 
-    // Process image
     img.Image originalImage = img.decodeImage(imageData)!;
     img.Image resizedImage =
         img.copyResize(originalImage, width: 28, height: 28);
     resizedImage = img.grayscale(resizedImage);
 
-    // Prepare input
     var input = Float32List(1 * 28 * 28 * 1);
     var buffer = Float32List.view(input.buffer);
 
@@ -65,7 +59,6 @@ class MLService {
       buffer[i] = grayscale;
     }
 
-    // Run prediction
     var output = List.filled(10, 0.0).reshape([1, 10]);
     _interpreter!.run(input.reshape([1, 28, 28, 1]), output);
 

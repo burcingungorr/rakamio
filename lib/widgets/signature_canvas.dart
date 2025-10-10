@@ -7,10 +7,10 @@ class SignatureCanvas extends StatelessWidget {
   final GlobalKey signatureKey;
 
   const SignatureCanvas({
-    Key? key,
+    super.key,
     required this.controller,
     required this.signatureKey,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

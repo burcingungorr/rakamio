@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'level_selection_screen.dart';
+import 'LevelsScreen/level_selection_screen.dart';
 import '../utils/constants.dart';
 import '../services/audio_service.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) =>  LevelSelectionScreen()),
+                  MaterialPageRoute(builder: (context) =>  const LevelSelectionScreen()),
                 );
               },
               child: const Icon(Icons.play_arrow, size: 50, color: Colors.white),

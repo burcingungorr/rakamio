@@ -4,6 +4,8 @@ import 'home_screen.dart';
 import '../utils/constants.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -15,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(AppConstants.splashDuration, () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     });
   }
@@ -31,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
             left: 0,
             right: 0,
             child: Container(
-              margin: EdgeInsets.only(top: 50),
+              margin: const EdgeInsets.only(top: 50),
               alignment: Alignment.center,
               height: MediaQuery.of(context).size.height * 0.5,
               child: Column(
@@ -58,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget _buildTitle(String text) {
     return Text(
       text,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: AppConstants.titleFontSize,
         color: AppConstants.primaryColor,
         fontWeight: FontWeight.bold,
