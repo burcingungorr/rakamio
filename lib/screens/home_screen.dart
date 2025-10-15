@@ -72,22 +72,24 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Stack(
         children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/homscreen.jpeg',
+              fit: BoxFit.cover,
+              width: MediaQuery.of(context).size.width,
+            ),
+          ),
           Positioned(
             top: 40,
             left: 20,
             child: IconButton(
               iconSize: 40,
               color: AppConstants.primaryColor,
-              icon: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Icon(Icons.music_note, size: 40),
-                  if (!isMusicOn)
-                    const Icon(Icons.close, size: 50, color: Colors.red),
-                ],
+              icon: Icon(
+                isMusicOn ? Icons.music_note : Icons.music_off,
+                size: 40,
               ),
               onPressed: () {
                 setState(() {
@@ -96,7 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
-
           Positioned(
             top: 40,
             right: 20,
@@ -107,7 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: _showInfoModal,
             ),
           ),
-
           Center(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -118,10 +118,12 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) =>  const LevelSelectionScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const LevelSelectionScreen()),
                 );
               },
-              child: const Icon(Icons.play_arrow, size: 50, color: Colors.white),
+              child:
+                  const Icon(Icons.play_arrow, size: 50, color: Colors.white),
             ),
           ),
         ],
