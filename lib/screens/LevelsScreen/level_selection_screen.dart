@@ -18,19 +18,18 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
   Set<int> _starredLevels = {};
   bool _animatePencil = false;
   bool _canGoNextChapter = false;
-  bool _isLoading = true; 
-
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _initializeScreen(); 
+    _initializeScreen();
   }
 
   Future<void> _initializeScreen() async {
     await _loadLastLevel();
     setState(() {
-      _isLoading = false; 
+      _isLoading = false;
       _animatePencil = true;
     });
   }
@@ -82,8 +81,6 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
     }
   }
 
- 
-
   void _onLevelComplete(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> completedLevels = prefs.getStringList('completedLevels') ?? [];
@@ -107,56 +104,65 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
       builder: (_) => const Center(child: AnimatedStar()),
     );
     await Future.delayed(const Duration(seconds: 1));
-
     Navigator.of(context).pop();
   }
 
-  Widget _buildLevelDot(int index) {
-    bool isUnlocked = index < _unlockedLevels;
-    bool hasStar = _starredLevels.contains(index);
-    bool isNextLevel = index == _unlockedLevels - 1;
+ Widget _buildLevelDot(int index) {
+  bool isUnlocked = index < _unlockedLevels;
+  bool hasStar = _starredLevels.contains(index);
+  bool isNextLevel = index == _unlockedLevels - 1;
 
-    Color bgColor =
-        isUnlocked ? (index < 10 ? Colors.orange : Colors.green) : Colors.grey;
+  Color bgColor =
+      isUnlocked ? (index < 10 ? Colors.orange : Colors.grey) : Colors.grey;
 
-    Widget icon;
-    if (!isUnlocked) {
-      icon = const Icon(Icons.lock, color: Colors.white, size: 40);
-    } else if (hasStar) {
-      icon = const Icon(Icons.star, color: Colors.yellow, size: 70);
-    } else {
-      icon = AnimatedAlign(
-        alignment:
-            _animatePencil && isNextLevel ? Alignment.center : const Alignment(0, -1.5),
-        duration: const Duration(seconds: 1),
-        curve: Curves.easeOut,
-        child: const Icon(Icons.edit, color: Colors.white, size: 50),
-      );
-    }
-
-    return GestureDetector(
-      onTap: () => _selectLevel(index),
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 20),
-        width: 100,
-        height: 100,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: bgColor,
-              ),
-            ),
-            icon,
-          ],
-        ),
-      ),
+  Widget icon;
+  if (!isUnlocked) {
+    icon = const Icon(Icons.lock, color: Colors.white, size: 40);
+  } else if (hasStar) {
+    icon = const Icon(Icons.star, color: Colors.yellow, size: 55);
+  } else {
+    icon = AnimatedAlign(
+      alignment: _animatePencil && isNextLevel
+          ? Alignment.center
+          : const Alignment(0, -1.5),
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeOut,
+      child: const Icon(Icons.edit, color: Colors.white, size: 50),
     );
   }
+
+  return GestureDetector(
+    onTap: () => _selectLevel(index),
+    child: Container(
+      margin: const EdgeInsets.symmetric(vertical: 20),
+      width: 100,
+      height: 100,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+              Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: bgColor.withOpacity(0.9),
+                border: Border.all(color: Colors.white, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              width: 120,
+              height: 120,
+            ),
+          icon,
+        ],
+      ),
+    ),
+  );
+}
 
   Widget _buildConnector(int index) {
     const int dotCount = 5;
@@ -186,8 +192,8 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
   Widget build(BuildContext context) {
     bool isFirstChapterCompleted = _unlockedLevels > 10;
 
-      if (_isLoading) {
-      return const LoadingWidget(); 
+    if (_isLoading) {
+      return const LoadingWidget();
     }
 
     return Scaffold(
@@ -195,6 +201,19 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
           isFirstChapterCompleted ? Colors.grey[300] : Colors.white,
       body: Stack(
         children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/bg.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.4), 
+            ),
+          ),
+
           Center(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 50),
@@ -209,6 +228,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
               },
             ),
           ),
+
           Positioned(
             right: 20,
             bottom: 20,
@@ -216,13 +236,14 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
               opacity: _canGoNextChapter ? 1.0 : 0.5,
               child: IconButton(
                 icon: const Icon(Icons.arrow_forward, size: 50),
-                color: Colors.black,
+                color: Colors.white, 
                 onPressed: _canGoNextChapter
                     ? () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => LevelSelectionScreen2()),
+                            builder: (_) => LevelSelectionScreen2(),
+                          ),
                         );
                       }
                     : null,
@@ -234,4 +255,3 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
     );
   }
 }
-

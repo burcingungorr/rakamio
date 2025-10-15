@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/widgets/animated_star.dart';
 import 'package:flutter_application_1/widgets/loading.dart';
@@ -19,7 +20,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
   Set<int> _starredLevels = {};
   bool _animatePencil = false;
   bool _canGoNextChapter = false;
-  bool _isLoading = true; // ✅ loading state eklendi
+  bool _isLoading = true;
 
   final AudioService _audioService = AudioService();
 
@@ -27,11 +28,12 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
   late Animation<double> _speakerAnimation;
 
   bool _showSpeakerWarning = false;
+  Timer? _soundWarningTimer;
 
   @override
   void initState() {
     super.initState();
-    _initializeScreen(); // ✅ initialize işlemi başlatıldı
+    _initializeScreen();
 
     _speakerController = AnimationController(
       vsync: this,
@@ -44,7 +46,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
 
   Future<void> _initializeScreen() async {
     await _loadLastLevel();
-    await Future.delayed(const Duration(milliseconds: 300)); // kısa bekleme
+    await Future.delayed(const Duration(milliseconds: 300));
     setState(() {
       _isLoading = false;
       _animatePencil = true;
@@ -58,21 +60,30 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
 
   @override
   void dispose() {
+    _soundWarningTimer?.cancel();
     _speakerController.dispose();
     _audioService.dispose();
     super.dispose();
   }
 
   Future<void> _showSoundWarning() async {
+    _soundWarningTimer?.cancel();
+    
+    if (!mounted) return;
+    
     setState(() {
       _showSpeakerWarning = true;
     });
+    
     _speakerController.repeat(reverse: true);
-
-    Future.delayed(const Duration(seconds: 4), () {
+    
+    _soundWarningTimer = Timer(const Duration(seconds: 4), () {
       if (mounted) {
-        setState(() => _showSpeakerWarning = false);
         _speakerController.stop();
+        _speakerController.reset();
+        setState(() {
+          _showSpeakerWarning = false;
+        });
       }
     });
   }
@@ -150,7 +161,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
     if (!isUnlocked) {
       icon = const Icon(Icons.lock, color: Colors.white, size: 40);
     } else if (hasStar) {
-      icon = const Icon(Icons.star, color: Colors.yellow, size: 70);
+      icon = const Icon(Icons.star, color: Colors.yellow, size: 55);
     } else if (index == _unlockedLevels - 1) {
       icon = AnimatedAlign(
         alignment: _animatePencil ? Alignment.center : const Alignment(0, -1.5),
@@ -173,13 +184,22 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Container(
+                Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: bgColor,
+                color: bgColor.withOpacity(0.9),
+                border: Border.all(color: Colors.white, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              width: 100,
-              height: 100,
+              width: 120,
+              height: 120,
             ),
             icon,
           ],
@@ -210,15 +230,26 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Eğer loading aktifse sadece loading gösterecek
     if (_isLoading) {
-      return const LoadingWidget(); // loading komponenti çağırıldı
+      return const LoadingWidget();
     }
 
     return Scaffold(
-      backgroundColor: Colors.yellow,
       body: Stack(
         children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/bg.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.4),
+            ),
+          ),
+
           Center(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 50),
@@ -241,7 +272,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
               opacity: _canGoNextChapter ? 1.0 : 0.8,
               child: IconButton(
                 icon: const Icon(Icons.arrow_forward, size: 50),
-                color: Colors.black,
+                color: Colors.white,
                 onPressed: _canGoNextChapter
                     ? () {
                         Navigator.push(
@@ -263,7 +294,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
                 scale: _speakerAnimation,
                 child: const Icon(
                   Icons.volume_up,
-                  color: Colors.black,
+                  color: Colors.white,
                   size: 36,
                 ),
               ),
@@ -273,5 +304,3 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
     );
   }
 }
-
-

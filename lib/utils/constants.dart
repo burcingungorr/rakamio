@@ -10,7 +10,7 @@ class AppConstants {
   static const double titleFontSize = 70.0;
   static const double levelButtonFontSize = 40.0;
 
-  static const Duration splashDuration = Duration(seconds: 4);
+  static const Duration splashDuration = Duration(seconds: 3);
   static const Duration audioDelay = Duration(seconds: 2);
 
   static const String modelAssetPath = 'assets/mnist.tflite';

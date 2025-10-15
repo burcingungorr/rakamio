@@ -14,14 +14,14 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
   int _unlockedLevels = 30;
   final Set<int> _starredLevels = {};
   bool _animatePencil = true;
-  bool _isLoading = true; 
+  bool _isLoading = true;
 
   final AudioService _audioService = AudioService();
 
   @override
   void initState() {
     super.initState();
-    _initialize(); 
+    _initialize();
   }
 
   Future<void> _initialize() async {
@@ -40,7 +40,6 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
 
     setState(() {
       _unlockedLevels = lastLevel + 1;
-
       if (lastLevel >= 30) {
         for (int i = 30; i <= lastLevel; i++) {
           _starredLevels.add(i);
@@ -110,13 +109,13 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
   Widget _buildLevelDot(int index) {
     bool isUnlocked = index <= _unlockedLevels;
     bool hasStar = _starredLevels.contains(index);
-    Color bgColor = isUnlocked ? Colors.purple : Colors.grey;
+    Color bgColor = isUnlocked ? Colors.pinkAccent : Colors.grey[400]!;
 
     Widget icon;
     if (!isUnlocked) {
       icon = const Icon(Icons.lock, color: Colors.white, size: 40);
     } else if (hasStar) {
-      icon = const Icon(Icons.star, color: Colors.yellow, size: 70);
+      icon = const Icon(Icons.star, color: Colors.yellow, size: 55);
     } else {
       icon = AnimatedAlign(
         alignment: _animatePencil ? Alignment.center : const Alignment(0, -1.5),
@@ -140,7 +139,16 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: bgColor,
+                color: bgColor.withOpacity(0.9),
+                border: Border.all(color: Colors.white, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               width: 120,
               height: 120,
@@ -164,7 +172,7 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
         margin: const EdgeInsets.symmetric(vertical: 6),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isLevelPassed ? Colors.purple : Colors.grey[300],
+          color: isLevelPassed ? Colors.pinkAccent : Colors.grey[300],
         ),
       ));
     }
@@ -173,15 +181,26 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Eğer loading aktifse sadece loading gösterecek
     if (_isLoading) {
       return const LoadingWidget();
     }
 
-    return Scaffold(
-      backgroundColor: Colors.pink[50],
+   return Scaffold(
       body: Stack(
         children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/bg.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.4),
+            ),
+          ),
+
           Center(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 50),
@@ -208,4 +227,3 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
     super.dispose();
   }
 }
-

@@ -25,6 +25,8 @@ dependencies:
       url: https://github.com/tensorflow/flutter-tflite.git
       ref: main
   shared_preferences: ^2.5.3
+  lottie: ^3.3.2
+  font_awesome_flutter: ^10.10.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -35,4 +37,5 @@ flutter:
   assets:
     - assets/images/
     - assets/audios/
+    - assets/animations/
     - assets/mnist.tflite
