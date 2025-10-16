@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/home_screen.dart';
 import 'package:flutter_application_1/widgets/animated_star.dart';
 import 'package:flutter_application_1/widgets/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -228,7 +229,22 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
               },
             ),
           ),
-
+          Positioned(
+            left: 20,
+            bottom: 20,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, size: 50),
+                color: Colors.white, 
+                onPressed:  () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => HomeScreen(),
+                          ),
+                        );
+                      }
+              ),
+            ),
           Positioned(
             right: 20,
             bottom: 20,

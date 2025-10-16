@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/screens/LevelsScreen/level_selection_screen.dart';
 import 'package:flutter_application_1/widgets/animated_star.dart';
 import 'package:flutter_application_1/widgets/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -267,7 +268,22 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
               },
             ),
           ),
-
+           Positioned(
+            left: 20,
+            bottom: 20,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, size: 50),
+                color: Colors.white, 
+                onPressed:  () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => LevelSelectionScreen(),
+                          ),
+                        );
+                      }
+              ),
+            ),
           Positioned(
             right: 20,
             bottom: 20,
