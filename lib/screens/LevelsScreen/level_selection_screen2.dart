@@ -27,8 +27,8 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
   late AnimationController _speakerController;
   late Animation<double> _speakerAnimation;
 
-  bool _showSpeakerWarning = false;
-  Timer? _soundWarningTimer;
+  // bool _showSpeakerWarning = false;
+  // Timer? _soundWarningTimer;
 
   @override
   void initState() {
@@ -52,41 +52,44 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
       _animatePencil = true;
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _showSoundWarning();
-      _audioService.playAudio(AudioFiles.write);
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _playAudio();
     });
   }
 
   @override
   void dispose() {
-    _soundWarningTimer?.cancel();
     _speakerController.dispose();
     _audioService.dispose();
     super.dispose();
   }
 
-  Future<void> _showSoundWarning() async {
-    _soundWarningTimer?.cancel();
-    
-    if (!mounted) return;
-    
-    setState(() {
-      _showSpeakerWarning = true;
-    });
-    
-    _speakerController.repeat(reverse: true);
-    
-    _soundWarningTimer = Timer(const Duration(seconds: 4), () {
-      if (mounted) {
-        _speakerController.stop();
-        _speakerController.reset();
-        setState(() {
-          _showSpeakerWarning = false;
-        });
-      }
-    });
+    void _playAudio() {
+    _audioService.playAudio(AudioFiles.write);
+    _speakerController.forward().then((_) => _speakerController.reverse());
   }
+
+  // Future<void> _showSoundWarning() async {
+  //   _soundWarningTimer?.cancel();
+    
+  //   if (!mounted) return;
+    
+  //   setState(() {
+  //     _showSpeakerWarning = true;
+  //   });
+    
+  //   _speakerController.repeat(reverse: true);
+    
+  //   _soundWarningTimer = Timer(const Duration(seconds: 4), () {
+  //     if (mounted) {
+  //       _speakerController.stop();
+  //       _speakerController.reset();
+  //       setState(() {
+  //         _showSpeakerWarning = false;
+  //       });
+  //     }
+  //   });
+  // }
 
   Future<void> _loadLastLevel() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -286,18 +289,20 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
             ),
           ),
 
-          if (_showSpeakerWarning)
             Positioned(
               top: 40,
               right: 20,
               child: ScaleTransition(
                 scale: _speakerAnimation,
-                child: const Icon(
+                child:  IconButton(
+                  icon: const Icon(
                   Icons.volume_up,
                   color: Colors.white,
                   size: 36,
                 ),
+                onPressed: _playAudio,
               ),
+            ),
             ),
         ],
       ),

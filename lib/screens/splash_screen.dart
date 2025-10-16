@@ -46,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
           // ),
          /// Positioned(
               child: Image.asset(
-                'assets/images/splashscreen.gif',
+                'assets/images/RAKAMİO.gif',
                 fit: BoxFit.cover,
                 width: MediaQuery.of(context).size.width,
               ),
