@@ -96,7 +96,7 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
       });
       
       await _audioService.playAudio(AudioFiles.tryAgain);
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 3));
       
       _controller.clear();
       _selectedImage = null;

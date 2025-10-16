@@ -12,7 +12,6 @@ class AudioService {
   bool _isBackgroundPlaying = false;
   double _pausedPosition = 0.0;
 
-  // Müzik açık/kapalı kontrolü
   void setMusicEnabled(bool enabled) {
     _isMusicEnabled = enabled;
     if (!enabled) {
@@ -24,7 +23,6 @@ class AudioService {
 
   bool get isMusicEnabled => _isMusicEnabled;
 
-  // Arka plan müziğini başlat
   Future<void> playBackgroundMusic() async {
     if (!_isMusicEnabled || _isBackgroundPlaying) return;
     
@@ -38,7 +36,6 @@ class AudioService {
     }
   }
 
-  // Arka plan müziğini duraklat
   Future<void> pauseBackgroundMusic() async {
     if (_isBackgroundPlaying) {
       final position = await _backgroundPlayer.getCurrentPosition();
@@ -47,55 +44,45 @@ class AudioService {
     }
   }
 
-  // Arka plan müziğini devam ettir
   Future<void> resumeBackgroundMusic() async {
     if (_isMusicEnabled && _isBackgroundPlaying) {
       await _backgroundPlayer.resume();
     }
   }
 
-  // Arka plan müziğini durdur
   Future<void> stopBackgroundMusic() async {
     await _backgroundPlayer.stop();
     _isBackgroundPlaying = false;
     _pausedPosition = 0.0;
   }
 
-  // Efekt sesi çal (tebrikler, sayılar vb.)
   Future<void> playEffectAudio(String audioPath) async {
     try {
-      // Arka plan müziğini duraklat
       await pauseBackgroundMusic();
       
-      // Efekt sesini çal
-      await _effectPlayer.stop(); // Önceki efekti durdur
-      await _effectPlayer.setVolume(1.0); // Efektler için yüksek ses
+      await _effectPlayer.stop(); 
+      await _effectPlayer.setVolume(1.0); 
       await _effectPlayer.play(AssetSource(audioPath));
       
-      // Efekt bitince arka plan müziğini devam ettir
       _effectPlayer.onPlayerComplete.listen((_) {
         resumeBackgroundMusic();
       });
     } catch (e) {
       print('Efekt sesi çalınamadı: $e');
-      // Hata durumunda bile arka plan müziğini devam ettir
       resumeBackgroundMusic();
     }
   }
 
-  // Eski metod (geriye uyumluluk için) - artık efekt olarak çalışır
   Future<void> playAudio(String audioPath) async {
     await playEffectAudio(audioPath);
   }
 
-  // Tüm sesleri durdur
   Future<void> stopAll() async {
     await _backgroundPlayer.stop();
     await _effectPlayer.stop();
     _isBackgroundPlaying = false;
   }
 
-  // Kaynakları temizle
   void dispose() {
     _backgroundPlayer.dispose();
     _effectPlayer.dispose();

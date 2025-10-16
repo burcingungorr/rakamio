@@ -32,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       curve: Curves.easeInOut,
     ));
     
-    // "Haydi butona bas" sesini çal
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _audioService.playEffectAudio(AudioFiles.lets);
     });
