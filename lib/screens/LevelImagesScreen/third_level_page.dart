@@ -25,8 +25,9 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _audioService.playAudio(AudioFiles.how);  
+      _audioService.playAudio(AudioFiles.how);
     });
 
     Timer(const Duration(seconds: 3), () {
@@ -46,7 +47,7 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
         ),
       ).then((result) {
         if (result == false) {
-          _audioService.playAudio(AudioFiles.tryAgain); 
+          _audioService.playAudio(AudioFiles.tryAgain);
         }
       });
     });
@@ -59,11 +60,10 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
 
     return Scaffold(
       backgroundColor: Colors.pink[100],
-      body: Center(
+      body: SizedBox.expand(
         child: Image.asset(
-          media.objectImage,
-          width: 250,
-          height: 250,
+          media.gif,
+          fit: BoxFit.cover, // 👈 GIF tüm ekranı kaplar
         ),
       ),
     );
