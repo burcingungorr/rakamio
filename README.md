@@ -43,8 +43,7 @@ Eğlenceli bir deneyim sunarak çocukların **sayılara olan ilgisini artırır*
 <p align="center">
   <img src="https://github.com/user-attachments/assets/845d1000-4d9d-4d50-a801-e4cbab5e2fc9" width="22%" />
   <img src="https://github.com/user-attachments/assets/75be268c-c104-4a56-a2e5-0de4eedaa2a4" width="22%" />
-  <img src="![WhatsApp Görsel 2025-10-19 saat 16 15 47_e0d79bce](https://github.com/user-attachments/assets/c5f72995-9904-45d5-abf7-f630b2985c1e)
-" width="22%" />
+  <img src="https://github.com/user-attachments/assets/c5f72995-9904-45d5-abf7-f630b2985c1e" width="22%" />
   <img src="https://github.com/user-attachments/assets/4522a5df-0fac-4040-92fe-4486e597dd4d" width="22%" />
 </p>
 
