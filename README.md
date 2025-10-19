@@ -14,7 +14,7 @@ Bu proje, çocukların rakamları çizerek ve dinleyerek öğrenebileceği bir m
 Bu uygulama, çocukların rakamları çizerek öğrenmelerini sağlarken aynı zamanda dinleyerek doğru çizim becerilerini geliştirmelerine yardımcı olur. Rakamları eğlenceli bir şekilde öğrenmek, çocukların sayılarla olan ilişkilerini güçlendirir ve temel matematik bilgilerini edinmelerine katkı sağlar.
 
 ## 🛠 Kullanılan Teknolojiler
-- **Mobil Uygulama**: [Flutter](https://flutter.google.com/)
+- **Mobil Uygulama**: [[Flutter](https://flutter.google.com/)](https://flutter.dev/)
 - **Yapay Zeka Modeli Eğitimi**: [Python](https://www.python.org/), [TensorFlow](https://www.tensorflow.org/)
 
 
