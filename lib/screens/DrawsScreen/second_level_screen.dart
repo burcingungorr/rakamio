@@ -141,25 +141,33 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
     );
   }
 
-  Widget _buildIconButton({
-    required IconData icon,
-    required VoidCallback onPressed,
-    double size = 55,
-    double iconSize = 28,
-  }) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: AppConstants.primaryColor,
-        borderRadius: BorderRadius.circular(15),
+ Widget _buildIconButton({
+  required IconData icon,
+  required VoidCallback onPressed,
+  double size = 55,
+  double iconSize = 28,
+  bool hasBackground = true, 
+}) {
+  return Container(
+    width: size,
+    height: size,
+    decoration: hasBackground
+        ? BoxDecoration(
+            color: AppConstants.primaryColor,
+            borderRadius: BorderRadius.circular(15),
+          )
+        : null, 
+    child: IconButton(
+      icon: Icon(
+        icon,
+        color: Colors.white,
+        size: iconSize,
       ),
-      child: IconButton(
-        icon: Icon(icon, color: Colors.white, size: iconSize),
-        onPressed: _isProcessing ? null : onPressed,
-      ),
-    );
-  }
+      onPressed: _isProcessing ? null : onPressed,
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -170,16 +178,31 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
           Column(
             children: <Widget>[
               const SizedBox(height: 40),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildIconButton(icon: FontAwesomeIcons.eraser, onPressed: _clearCanvas),
-                    _buildIconButton(icon: FontAwesomeIcons.check, onPressed: _predictDigit),
-                  ],
+            Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildIconButton(
+                  icon: FontAwesomeIcons.eraser,
+                  onPressed: _clearCanvas,
                 ),
+
+                _buildIconButton(
+                icon: FontAwesomeIcons.volumeHigh,
+                onPressed: _playAudioForCurrentNumber,
+                hasBackground: false, 
               ),
+
+
+                _buildIconButton(
+                  icon: FontAwesomeIcons.check,
+                  onPressed: _predictDigit,
+                ),
+              ],
+            ),
+          ),
+
               const SizedBox(height: 20),
               Container(
                 height: 2,
