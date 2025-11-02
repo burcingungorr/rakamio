@@ -25,6 +25,8 @@ class AudioFiles {
   static const String write = 'audios/duydugun.mp3';
   static const String lets = 'audios/haydibutonabas.mp3';
   static const String how = 'audios/sencekactane.mp3';
+  static const String animal = 'audios/kachayvan.mp3';
+  static const String sum = 'audios/toplama.mp3';
 
   static const String zero = 'audios/sifir.mp3';
   static const String one = 'audios/bir.mp3';
