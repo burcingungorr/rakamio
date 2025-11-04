@@ -1,5 +1,5 @@
 # ✏️ Rakamio – Yapay Zeka Destekli Çocuklar İçin Rakam Öğrenme Uygulaması
-
+(Seviyeler Ekleniyor...)
 **Rakamio**, çocukların rakamları çizerek, dinleyerek ve görsel olarak öğrenmelerini sağlayan eğlenceli bir mobil uygulamadır.  
 Uygulama, seviyeli bir öğrenme süreciyle çocukların rakam kavramını pekiştirmesini ve sayma becerilerini geliştirmesini amaçlar.
 
