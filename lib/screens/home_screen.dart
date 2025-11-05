@@ -18,12 +18,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
-    )..repeat(reverse: true); 
-    
+    )..repeat(reverse: true);
+
     _scaleAnimation = Tween<double>(
       begin: 0.9,
       end: 1.1,
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _audioService.playEffectAudio(AudioFiles.lets);
     });
@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           Positioned(
             top: 40,
-            left: 20,
+            right: 20,
             child: IconButton(
               iconSize: 40,
               color: AppConstants.primaryColor,
@@ -72,34 +72,50 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               },
             ),
           ),
+
           Center(
-            child: AnimatedBuilder(
-              animation: _scaleAnimation,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: _scaleAnimation.value,
-                  child: child,
-                );
-              },
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  backgroundColor: AppConstants.primaryColor,
-                  padding: const EdgeInsets.all(30),
-                ),
-                onPressed: () {
-                  _animationController.stop();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LevelSelectionScreen()
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedBuilder(
+                  animation: _scaleAnimation,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _scaleAnimation.value,
+                      child: child,
+                    );
+                  },
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      backgroundColor: AppConstants.primaryColor,
+                      padding: const EdgeInsets.all(30),
                     ),
-                  );
-                },
-                child: const Icon(Icons.play_arrow, size: 50, color: Colors.white),
-              ),
+                    onPressed: () {
+                      _animationController.stop();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LevelSelectionScreen(),
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.play_arrow, size: 50, color: Colors.white),
+                  ),
+                ),
+
+              ],
             ),
           ),
+            Positioned(
+          top: 55,
+          left:-20,
+          child: Image.asset(
+            'assets/gif/selam.gif',
+            width: 250,
+            height: 280,
+          ),
+        ),
         ],
       ),
     );

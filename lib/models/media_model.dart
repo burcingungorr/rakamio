@@ -129,3 +129,58 @@ class MediaData {
     ),
   ];
 }
+
+class SimpleMediaModel {
+  final String gif;
+  final String number;
+
+  SimpleMediaModel({
+    required this.gif,
+    required this.number,
+  });
+}
+
+class SimpleMediaData {
+  static final List<SimpleMediaModel> simpleMediaList = [
+    SimpleMediaModel(
+      gif: 'assets/gif/t1.gif',
+      number: '2',
+    ),
+    SimpleMediaModel(
+      gif: 'assets/gif/t2.gif',
+      number: '6',
+    ),
+    SimpleMediaModel(
+      gif: 'assets/gif/t3.gif',
+      number: '7',
+    ),
+    SimpleMediaModel(
+      gif: 'assets/gif/t4.gif',
+      number: '4',
+    ),
+    SimpleMediaModel(
+      gif: 'assets/gif/t5.gif',
+      number: '5',
+    ),
+    SimpleMediaModel(
+      gif: 'assets/gif/t6.gif',
+      number: '6',
+    ),
+    SimpleMediaModel(
+      gif: 'assets/gif/t7.gif',
+      number: '8',
+    ),
+    SimpleMediaModel(
+      gif: 'assets/gif/t8.gif',
+      number: '3',
+    ),
+    SimpleMediaModel(
+      gif: 'assets/gif/t9.gif',
+      number: '9',
+    ),
+    SimpleMediaModel(
+      gif: 'assets/gif/t10.gif',
+      number: '7',
+    ),
+  ];
+}

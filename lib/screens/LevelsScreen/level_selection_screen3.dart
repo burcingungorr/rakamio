@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/LevelsScreen/level_selection_screen2.dart';
+import 'package:flutter_application_1/screens/LevelsScreen/level_selection_screen4.dart';
 import 'package:flutter_application_1/widgets/animated_star.dart';
 import 'package:flutter_application_1/widgets/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
   final Set<int> _starredLevels = {};
   bool _animatePencil = true;
   bool _isLoading = true;
+  bool _canGoNextChapter = false;
 
   final AudioService _audioService = AudioService();
 
@@ -42,10 +44,11 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
     setState(() {
       _unlockedLevels = lastLevel + 1;
       if (lastLevel >= 30) {
-        for (int i = 30; i <= lastLevel; i++) {
-          _starredLevels.add(i);
-        }
+      for (int i = 30; i <= lastLevel; i++) {
+        _starredLevels.add(i);
       }
+      _canGoNextChapter = true; 
+    }
     });
   }
 
@@ -233,6 +236,27 @@ class _LevelSelectionScreen3State extends State<LevelSelectionScreen3> {
                       }
               ),
             ),
+
+             Positioned(
+            right: 20,
+            bottom: 20,
+            child: Opacity(
+              opacity: _canGoNextChapter? 1.0 : 0.8,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_forward, size: 50),
+                color: Colors.white,
+                onPressed: _canGoNextChapter
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => LevelSelectionScreen4()),
+                        );
+                      }
+                    : null,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -34,6 +35,22 @@ class _FirstLevelScreenState extends State<FirstLevelScreen> {
   Widget _feedbackAnimation = const SizedBox.shrink();
   bool _isProcessing = false;
 
+  String? _selectedGif;
+  String? _selectedWrongGif;
+
+  final List<String> _gifPaths = [
+    'assets/gif/dogru1.gif',
+    'assets/gif/dogru2.gif',
+    'assets/gif/dogru3.gif',
+    'assets/gif/dogru4.gif',
+    'assets/gif/dogru5.gif',
+    'assets/gif/dogru6.gif',
+  ];
+
+  final List<String> _wrongGifPaths = [
+    'assets/gif/yanlis.gif',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +64,7 @@ class _FirstLevelScreenState extends State<FirstLevelScreen> {
 
   Future<void> _predictDigit() async {
     if (!_mlService.isModelLoaded || _isProcessing) return;
-    
+
     setState(() {
       _isProcessing = true;
     });
@@ -61,39 +78,67 @@ class _FirstLevelScreenState extends State<FirstLevelScreen> {
       _prediction = prediction;
     });
 
+    final random = Random();
+
     if (_prediction == widget.correctNumber) {
+      _selectedGif = _gifPaths[random.nextInt(_gifPaths.length)];
       setState(() {
-        _feedbackAnimation = _buildFullScreenAnimation('assets/animations/Confetti.json');
+        _feedbackAnimation = Stack(
+          children: [
+            _buildFullScreenAnimation('assets/animations/Confetti.json'),
+            _buildBottomGif(_selectedGif!),
+          ],
+        );
       });
-      
+
       await _audioService.playAudio(AudioFiles.congratulations);
       await Future.delayed(const Duration(seconds: 2));
-      
+
       widget.onCorrect();
-      
+
       await Future.delayed(const Duration(milliseconds: 1200));
       if (mounted) {
+        setState(() {
+          _selectedGif = null;
+          _feedbackAnimation = const SizedBox.shrink();
+        });
         Navigator.popUntil(context, (route) => route.isFirst);
       }
     } else {
+      if (_wrongGifPaths.isNotEmpty) {
+        _selectedWrongGif = _wrongGifPaths[random.nextInt(_wrongGifPaths.length)];
+      } else {
+        _selectedWrongGif = null;
+      }
+
       setState(() {
-        _feedbackAnimation = _buildFullScreenAnimation('assets/animations/SadFace.json');
+        if (_selectedWrongGif != null) {
+          _feedbackAnimation = Stack(
+            children: [
+              _buildFullScreenAnimation('assets/animations/SadFace.json'),
+              _buildBottomGif(_selectedWrongGif!),
+            ],
+          );
+        } else {
+          _feedbackAnimation = _buildFullScreenAnimation('assets/animations/SadFace.json');
+        }
       });
-      
+
       await _audioService.playAudio(AudioFiles.tryAgain);
       await Future.delayed(const Duration(seconds: 3));
-      
+
       _controller.clear();
       _selectedImage = null;
       _prediction = '';
-      
+
       if (mounted) {
         setState(() {
           _feedbackAnimation = const SizedBox.shrink();
+          _selectedWrongGif = null;
         });
       }
     }
-    
+
     if (mounted) {
       setState(() {
         _isProcessing = false;
@@ -115,14 +160,32 @@ class _FirstLevelScreenState extends State<FirstLevelScreen> {
     );
   }
 
+  Widget _buildBottomGif(String gifPath) {
+    return Positioned(
+      bottom: 40,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Image.asset(
+          gifPath,
+          width: 250,
+          height: 250,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+
   void _clearCanvas() {
     if (_isProcessing) return;
-    
+
     setState(() {
       _controller.clear();
       _selectedImage = null;
       _prediction = '';
       _feedbackAnimation = const SizedBox.shrink();
+      _selectedGif = null;
+      _selectedWrongGif = null;
     });
   }
 

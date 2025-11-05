@@ -30,7 +30,7 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
       _audioService.playAudio(AudioFiles.how);
     });
 
-    Timer(const Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 6), () {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -63,7 +63,7 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
       body: SizedBox.expand(
         child: Image.asset(
           media.gif,
-          fit: BoxFit.cover, // 👈 GIF tüm ekranı kaplar
+          fit: BoxFit.cover, 
         ),
       ),
     );
