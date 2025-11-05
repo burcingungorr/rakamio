@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:signature/signature.dart';
@@ -35,6 +36,19 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
   Widget _feedbackAnimation = const SizedBox.shrink();
   bool _isProcessing = false;
 
+  final List<String> _gifPaths = [
+    'assets/gif/dogru1.gif',
+    'assets/gif/dogru2.gif',
+    'assets/gif/dogru3.gif',
+    'assets/gif/dogru4.gif',
+    'assets/gif/dogru5.gif',
+    'assets/gif/dogru6.gif',
+  ];
+
+  final List<String> _wrongGifPaths = [
+    'assets/gif/yanlis.gif',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -48,7 +62,7 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
 
   Future<void> _predictDigit() async {
     if (!_mlService.isModelLoaded || _isProcessing) return;
-    
+
     setState(() {
       _isProcessing = true;
     });
@@ -62,38 +76,52 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
       _prediction = prediction;
     });
 
+    final random = Random();
+
     if (_prediction == widget.correctNumber) {
+      String selectedGif = _gifPaths[random.nextInt(_gifPaths.length)];
       setState(() {
-        _feedbackAnimation = _buildFullScreenAnimation('assets/animations/Confetti.json');
+        _feedbackAnimation = Stack(
+          children: [
+            _buildFullScreenAnimation('assets/animations/Confetti.json'),
+            _buildBottomGif(selectedGif),
+          ],
+        );
       });
-      
+
       await _audioService.playAudio(AudioFiles.congratulations);
       await Future.delayed(const Duration(seconds: 2));
-      
+
       if (mounted) {
         widget.onCorrect();
         Navigator.pop(context, true);
       }
     } else {
+      String wrongGif = _wrongGifPaths[0];
       setState(() {
-        _feedbackAnimation = _buildFullScreenAnimation('assets/animations/SadFace.json');
+        _feedbackAnimation = Stack(
+          children: [
+            _buildFullScreenAnimation('assets/animations/SadFace.json'),
+            _buildBottomGif(wrongGif),
+          ],
+        );
       });
-      
+
       await _audioService.playAudio(AudioFiles.tryAgain);
       await Future.delayed(const Duration(seconds: 3));
-      
+
       _controller.clear();
       _selectedImage = null;
       _prediction = '';
       _icon = const SizedBox.shrink();
-      
+
       if (mounted) {
         setState(() {
           _feedbackAnimation = const SizedBox.shrink();
         });
       }
     }
-    
+
     if (mounted) {
       setState(() {
         _isProcessing = false;
@@ -103,7 +131,7 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
 
   void _clearCanvas() {
     if (_isProcessing) return;
-    
+
     setState(() {
       _controller.clear();
       _selectedImage = null;
@@ -122,6 +150,21 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
             assetPath,
             fit: BoxFit.cover,
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomGif(String gifPath) {
+    return Positioned(
+      bottom: 40,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Image.asset(
+          gifPath,
+          width: 250,
+          height: 250,
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
 import '../../services/audio_service.dart';
@@ -32,7 +33,23 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
   Widget _feedbackAnimation = const SizedBox.shrink();
   bool _isProcessing = false;
   late String _currentNumber;
-  final List<String> _levelNumbers = ['0','1','2','3','4','5','6','7','8','9'];
+
+  final List<String> _gifPaths = [
+    'assets/gif/dogru1.gif',
+    'assets/gif/dogru2.gif',
+    'assets/gif/dogru3.gif',
+    'assets/gif/dogru4.gif',
+    'assets/gif/dogru5.gif',
+    'assets/gif/dogru6.gif',
+  ];
+
+  final List<String> _wrongGifPaths = [
+    'assets/gif/yanlis.gif',
+  ];
+
+  String? _selectedGif; 
+
+  final List<String> _levelNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
   @override
   void initState() {
@@ -50,24 +67,45 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
   void _playAudioForCurrentNumber() {
     String audioFile;
     switch (_currentNumber) {
-      case '0': audioFile = AudioFiles.zero; break;
-      case '1': audioFile = AudioFiles.one; break;
-      case '2': audioFile = AudioFiles.two; break;
-      case '3': audioFile = AudioFiles.three; break;
-      case '4': audioFile = AudioFiles.four; break;
-      case '5': audioFile = AudioFiles.five; break;
-      case '6': audioFile = AudioFiles.six; break;
-      case '7': audioFile = AudioFiles.seven; break;
-      case '8': audioFile = AudioFiles.eight; break;
-      case '9': audioFile = AudioFiles.nine; break;
-      default: audioFile = AudioFiles.one;
+      case '0':
+        audioFile = AudioFiles.zero;
+        break;
+      case '1':
+        audioFile = AudioFiles.one;
+        break;
+      case '2':
+        audioFile = AudioFiles.two;
+        break;
+      case '3':
+        audioFile = AudioFiles.three;
+        break;
+      case '4':
+        audioFile = AudioFiles.four;
+        break;
+      case '5':
+        audioFile = AudioFiles.five;
+        break;
+      case '6':
+        audioFile = AudioFiles.six;
+        break;
+      case '7':
+        audioFile = AudioFiles.seven;
+        break;
+      case '8':
+        audioFile = AudioFiles.eight;
+        break;
+      case '9':
+        audioFile = AudioFiles.nine;
+        break;
+      default:
+        audioFile = AudioFiles.one;
     }
     _audioService.playAudio(audioFile);
   }
 
   Future<void> _predictDigit() async {
     if (!_mlService.isModelLoaded || _isProcessing) return;
-    
+
     setState(() {
       _isProcessing = true;
     });
@@ -78,37 +116,52 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
     );
 
     if (prediction == _currentNumber) {
+      final random = Random();
+      _selectedGif = _gifPaths[random.nextInt(_gifPaths.length)];
+
       setState(() {
-        _feedbackAnimation = _buildFullScreenAnimation('assets/animations/Confetti.json');
+        _feedbackAnimation = Stack(
+          children: [
+            _buildFullScreenAnimation('assets/animations/Confetti.json'),
+            _buildBottomGif(_selectedGif!),
+          ],
+        );
       });
-      
+
       await _audioService.playAudio(AudioFiles.congratulations);
       await Future.delayed(const Duration(seconds: 2));
-      
+
       widget.onLevelComplete();
-      
+
       Future.delayed(const Duration(milliseconds: 1200), () {
         if (mounted) Navigator.pop(context);
       });
     } else {
+      _selectedGif = _wrongGifPaths.first;
+
       setState(() {
-        _feedbackAnimation = _buildFullScreenAnimation('assets/animations/SadFace.json');
+        _feedbackAnimation = Stack(
+          children: [
+            _buildFullScreenAnimation('assets/animations/SadFace.json'),
+            _buildBottomGif(_selectedGif!),
+          ],
+        );
       });
-      
+
       await _audioService.playAudio(AudioFiles.tryAgain);
       await Future.delayed(const Duration(seconds: 3));
-      
+
       _controller.clear();
       _selectedImage = null;
       _icon = const SizedBox.shrink();
-      
+
       if (mounted) {
         setState(() {
           _feedbackAnimation = const SizedBox.shrink();
         });
       }
     }
-    
+
     if (mounted) {
       setState(() {
         _isProcessing = false;
@@ -118,7 +171,7 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
 
   void _clearCanvas() {
     if (_isProcessing) return;
-    
+
     setState(() {
       _controller.clear();
       _selectedImage = null;
@@ -141,33 +194,47 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
     );
   }
 
- Widget _buildIconButton({
-  required IconData icon,
-  required VoidCallback onPressed,
-  double size = 55,
-  double iconSize = 28,
-  bool hasBackground = true, 
-}) {
-  return Container(
-    width: size,
-    height: size,
-    decoration: hasBackground
-        ? BoxDecoration(
-            color: AppConstants.primaryColor,
-            borderRadius: BorderRadius.circular(15),
-          )
-        : null, 
-    child: IconButton(
-      icon: Icon(
-        icon,
-        color: Colors.white,
-        size: iconSize,
+  Widget _buildBottomGif(String gifPath) {
+    return Positioned(
+      bottom: 50,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Image.asset(
+          gifPath,
+     width: 250,
+          height: 250,
+        ),
       ),
-      onPressed: _isProcessing ? null : onPressed,
-    ),
-  );
-}
+    );
+  }
 
+  Widget _buildIconButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    double size = 55,
+    double iconSize = 28,
+    bool hasBackground = true,
+  }) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: hasBackground
+          ? BoxDecoration(
+              color: AppConstants.primaryColor,
+              borderRadius: BorderRadius.circular(15),
+            )
+          : null,
+      child: IconButton(
+        icon: Icon(
+          icon,
+          color: Colors.white,
+          size: iconSize,
+        ),
+        onPressed: _isProcessing ? null : onPressed,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,31 +245,27 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
           Column(
             children: <Widget>[
               const SizedBox(height: 40),
-            Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildIconButton(
-                  icon: FontAwesomeIcons.eraser,
-                  onPressed: _clearCanvas,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildIconButton(
+                      icon: FontAwesomeIcons.eraser,
+                      onPressed: _clearCanvas,
+                    ),
+                    _buildIconButton(
+                      icon: FontAwesomeIcons.volumeHigh,
+                      onPressed: _playAudioForCurrentNumber,
+                      hasBackground: false,
+                    ),
+                    _buildIconButton(
+                      icon: FontAwesomeIcons.check,
+                      onPressed: _predictDigit,
+                    ),
+                  ],
                 ),
-
-                _buildIconButton(
-                icon: FontAwesomeIcons.volumeHigh,
-                onPressed: _playAudioForCurrentNumber,
-                hasBackground: false, 
               ),
-
-
-                _buildIconButton(
-                  icon: FontAwesomeIcons.check,
-                  onPressed: _predictDigit,
-                ),
-              ],
-            ),
-          ),
-
               const SizedBox(height: 20),
               Container(
                 height: 2,

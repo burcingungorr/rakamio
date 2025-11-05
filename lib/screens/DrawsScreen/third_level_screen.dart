@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:signature/signature.dart';
@@ -34,6 +35,20 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
   Widget _icon = const SizedBox.shrink();
   Widget _feedbackAnimation = const SizedBox.shrink();
   bool _isProcessing = false;
+  String? _selectedGif;
+
+  final List<String> _gifPaths = [
+    'assets/gif/dogru1.gif',
+    'assets/gif/dogru2.gif',
+    'assets/gif/dogru3.gif',
+    'assets/gif/dogru4.gif',
+    'assets/gif/dogru5.gif',
+    'assets/gif/dogru6.gif',
+  ];
+
+  final List<String> _wrongGifPaths = [
+    'assets/gif/yanlis.gif',
+  ];
 
   @override
   void initState() {
@@ -48,7 +63,7 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
 
   Future<void> _predictDigit() async {
     if (!_mlService.isModelLoaded || _isProcessing) return;
-    
+
     setState(() {
       _isProcessing = true;
     });
@@ -63,37 +78,52 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
     });
 
     if (_prediction == widget.correctNumber) {
+      final random = Random();
+      _selectedGif = _gifPaths[random.nextInt(_gifPaths.length)];
+
       setState(() {
-        _feedbackAnimation = _buildFullScreenAnimation('assets/animations/Confetti.json');
+        _feedbackAnimation = Stack(
+          children: [
+            _buildFullScreenAnimation('assets/animations/Confetti.json'),
+            _buildBottomGif(_selectedGif!),
+          ],
+        );
       });
-      
+
       await _audioService.playAudio(AudioFiles.congratulations);
       await Future.delayed(const Duration(seconds: 2));
-      
+
       if (mounted) {
         widget.onCorrect();
         Navigator.pop(context, true);
       }
     } else {
+      _selectedGif = _wrongGifPaths.first;
+
       setState(() {
-        _feedbackAnimation = _buildFullScreenAnimation('assets/animations/SadFace.json');
+        _feedbackAnimation = Stack(
+          children: [
+            _buildFullScreenAnimation('assets/animations/SadFace.json'),
+            _buildBottomGif(_selectedGif!),
+          ],
+        );
       });
-      
+
       await _audioService.playAudio(AudioFiles.tryAgain);
       await Future.delayed(const Duration(seconds: 3));
-      
+
       _controller.clear();
       _selectedImage = null;
       _prediction = '';
       _icon = const SizedBox.shrink();
-      
+
       if (mounted) {
         setState(() {
           _feedbackAnimation = const SizedBox.shrink();
         });
       }
     }
-    
+
     if (mounted) {
       setState(() {
         _isProcessing = false;
@@ -103,7 +133,7 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
 
   void _clearCanvas() {
     if (_isProcessing) return;
-    
+
     setState(() {
       _controller.clear();
       _selectedImage = null;
@@ -122,6 +152,21 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
             assetPath,
             fit: BoxFit.cover,
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomGif(String gifPath) {
+    return Positioned(
+      bottom: 50,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Image.asset(
+          gifPath,
+             width: 250,
+          height: 250,
         ),
       ),
     );
@@ -161,8 +206,14 @@ class _ThirdLevelScreenState extends State<ThirdLevelScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildIconButton(icon: FontAwesomeIcons.eraser, onPressed: _clearCanvas),
-                    _buildIconButton(icon: FontAwesomeIcons.check, onPressed: _predictDigit),
+                    _buildIconButton(
+                      icon: FontAwesomeIcons.eraser,
+                      onPressed: _clearCanvas,
+                    ),
+                    _buildIconButton(
+                      icon: FontAwesomeIcons.check,
+                      onPressed: _predictDigit,
+                    ),
                   ],
                 ),
               ),

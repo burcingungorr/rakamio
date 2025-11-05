@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
 import '../../services/audio_service.dart';
@@ -40,6 +41,19 @@ class _FifthLevelScreenState extends State<FifthLevelScreen> {
   late int _num2;
   late int _correctResult;
 
+  final List<String> _gifPaths = [
+    'assets/gif/dogru1.gif',
+    'assets/gif/dogru2.gif',
+    'assets/gif/dogru3.gif',
+    'assets/gif/dogru4.gif',
+    'assets/gif/dogru5.gif',
+    'assets/gif/dogru6.gif',
+  ];
+
+  final List<String> _wrongGifPaths = [
+    'assets/gif/yanlis.gif',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -65,10 +79,17 @@ class _FifthLevelScreenState extends State<FifthLevelScreen> {
       selectedImage: _selectedImage,
     );
 
+    final random = Random();
+
     if (prediction == _currentNumber) {
+      String selectedGif = _gifPaths[random.nextInt(_gifPaths.length)];
       setState(() {
-        _feedbackAnimation =
-            _buildFullScreenAnimation('assets/animations/Confetti.json');
+        _feedbackAnimation = Stack(
+          children: [
+            _buildFullScreenAnimation('assets/animations/Confetti.json'),
+            _buildBottomGif(selectedGif),
+          ],
+        );
       });
 
       await _audioService.playAudio(AudioFiles.congratulations);
@@ -80,9 +101,14 @@ class _FifthLevelScreenState extends State<FifthLevelScreen> {
         if (mounted) Navigator.pop(context);
       });
     } else {
+      String wrongGif = _wrongGifPaths[0];
       setState(() {
-        _feedbackAnimation =
-            _buildFullScreenAnimation('assets/animations/SadFace.json');
+        _feedbackAnimation = Stack(
+          children: [
+            _buildFullScreenAnimation('assets/animations/SadFace.json'),
+            _buildBottomGif(wrongGif),
+          ],
+        );
       });
 
       await _audioService.playAudio(AudioFiles.tryAgain);
@@ -117,6 +143,21 @@ class _FifthLevelScreenState extends State<FifthLevelScreen> {
             assetPath,
             fit: BoxFit.cover,
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomGif(String gifPath) {
+    return Positioned(
+      bottom: 40,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Image.asset(
+          gifPath,
+          width: 250,
+          height: 250,
         ),
       ),
     );
