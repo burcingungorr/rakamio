@@ -1,13 +1,12 @@
 import 'dart:typed_data';
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:signature/signature.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../services/audio_service.dart';
 import '../../services/ml_service.dart';
-import '../../widgets/signature_canvas.dart';
 import '../../utils/constants.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../widgets/signature_canvas.dart';
+import '../../widgets/prediction_helper.dart';
 
 class FourthLevelScreen extends StatefulWidget {
   final String correctNumber;
@@ -30,24 +29,10 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
   final MLService _mlService = MLService();
   final AudioService _audioService = AudioService();
   final GlobalKey _signatureKey = GlobalKey();
-  String _prediction = '';
+
   Uint8List? _selectedImage;
-  Widget _icon = const SizedBox.shrink();
   Widget _feedbackAnimation = const SizedBox.shrink();
   bool _isProcessing = false;
-
-  final List<String> _gifPaths = [
-    'assets/gif/dogru1.gif',
-    'assets/gif/dogru2.gif',
-    'assets/gif/dogru3.gif',
-    'assets/gif/dogru4.gif',
-    'assets/gif/dogru5.gif',
-    'assets/gif/dogru6.gif',
-  ];
-
-  final List<String> _wrongGifPaths = [
-    'assets/gif/yanlis.gif',
-  ];
 
   @override
   void initState() {
@@ -60,73 +45,29 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
     _mlService.loadModel();
   }
 
-  Future<void> _predictDigit() async {
-    if (!_mlService.isModelLoaded || _isProcessing) return;
-
-    setState(() {
-      _isProcessing = true;
-    });
-
-    String prediction = await _mlService.predictDigit(
-      _signatureKey,
+  Future<void> _handlePrediction() async {
+    await PredictionHelper.predictAndHandleResult(
+      context: context,
+      mlService: _mlService,
+      audioService: _audioService,
+      signatureKey: _signatureKey,
+      correctAnswer: widget.correctNumber,
+      mounted: mounted,
       selectedImage: _selectedImage,
-    );
-
-    setState(() {
-      _prediction = prediction;
-    });
-
-    final random = Random();
-
-    if (_prediction == widget.correctNumber) {
-      String selectedGif = _gifPaths[random.nextInt(_gifPaths.length)];
-      setState(() {
-        _feedbackAnimation = Stack(
-          children: [
-            _buildFullScreenAnimation('assets/animations/Confetti.json'),
-            _buildBottomGif(selectedGif),
-          ],
-        );
-      });
-
-      await _audioService.playAudio(AudioFiles.congratulations);
-      await Future.delayed(const Duration(seconds: 2));
-
-      if (mounted) {
-        widget.onCorrect();
-        Navigator.pop(context, true);
-      }
-    } else {
-      String wrongGif = _wrongGifPaths[0];
-      setState(() {
-        _feedbackAnimation = Stack(
-          children: [
-            _buildFullScreenAnimation('assets/animations/SadFace.json'),
-            _buildBottomGif(wrongGif),
-          ],
-        );
-      });
-
-      await _audioService.playAudio(AudioFiles.tryAgain);
-      await Future.delayed(const Duration(seconds: 3));
-
-      _controller.clear();
-      _selectedImage = null;
-      _prediction = '';
-      _icon = const SizedBox.shrink();
-
-      if (mounted) {
+      setProcessing: (isProcessing) {
         setState(() {
-          _feedbackAnimation = const SizedBox.shrink();
+          _isProcessing = isProcessing;
         });
-      }
-    }
-
-    if (mounted) {
-      setState(() {
-        _isProcessing = false;
-      });
-    }
+      },
+      setFeedbackAnimation: (animation) {
+        setState(() {
+          _feedbackAnimation = animation;
+        });
+      },
+      clearCanvas: _clearCanvas,
+      onCorrect: widget.onCorrect,
+      navigationType: NavigationType.LevelSelectionScreen4,
+    );
   }
 
   void _clearCanvas() {
@@ -135,39 +76,8 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
     setState(() {
       _controller.clear();
       _selectedImage = null;
-      _prediction = '';
-      _icon = const SizedBox.shrink();
       _feedbackAnimation = const SizedBox.shrink();
     });
-  }
-
-  Widget _buildFullScreenAnimation(String assetPath) {
-    return Positioned.fill(
-      child: Container(
-        color: Colors.black.withOpacity(0.4),
-        child: Center(
-          child: Lottie.asset(
-            assetPath,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomGif(String gifPath) {
-    return Positioned(
-      bottom: 40,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: Image.asset(
-          gifPath,
-          width: 250,
-          height: 250,
-        ),
-      ),
-    );
   }
 
   Widget _buildIconButton({
@@ -204,8 +114,14 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildIconButton(icon: FontAwesomeIcons.eraser, onPressed: _clearCanvas),
-                    _buildIconButton(icon: FontAwesomeIcons.check, onPressed: _predictDigit),
+                    _buildIconButton(
+                      icon: FontAwesomeIcons.eraser,
+                      onPressed: _clearCanvas,
+                    ),
+                    _buildIconButton(
+                      icon: FontAwesomeIcons.check,
+                      onPressed: _handlePrediction,
+                    ),
                   ],
                 ),
               ),
@@ -224,7 +140,6 @@ class FourthLevelScreenState extends State<FourthLevelScreen> {
                         ? SignatureCanvas(controller: _controller, signatureKey: _signatureKey)
                         : Image.memory(_selectedImage!),
                     const SizedBox(height: 20),
-                    _icon,
                   ],
                 ),
               ),

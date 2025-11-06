@@ -1,13 +1,12 @@
 import 'dart:typed_data';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
 import '../../services/audio_service.dart';
 import '../../services/ml_service.dart';
 import '../../widgets/signature_canvas.dart';
 import '../../utils/constants.dart';
+import '../../widgets/prediction_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:lottie/lottie.dart';
 
 class SecondLevelScreen extends StatefulWidget {
   final int level;
@@ -29,25 +28,9 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
   final AudioService _audioService = AudioService();
   final GlobalKey _signatureKey = GlobalKey();
   Uint8List? _selectedImage;
-  Widget _icon = const SizedBox.shrink();
   Widget _feedbackAnimation = const SizedBox.shrink();
   bool _isProcessing = false;
   late String _currentNumber;
-
-  final List<String> _gifPaths = [
-    'assets/gif/dogru1.gif',
-    'assets/gif/dogru2.gif',
-    'assets/gif/dogru3.gif',
-    'assets/gif/dogru4.gif',
-    'assets/gif/dogru5.gif',
-    'assets/gif/dogru6.gif',
-  ];
-
-  final List<String> _wrongGifPaths = [
-    'assets/gif/yanlis.gif',
-  ];
-
-  String? _selectedGif; 
 
   final List<String> _levelNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
@@ -104,69 +87,35 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
   }
 
   Future<void> _predictDigit() async {
-    if (!_mlService.isModelLoaded || _isProcessing) return;
-
-    setState(() {
-      _isProcessing = true;
-    });
-
-    String prediction = await _mlService.predictDigit(
-      _signatureKey,
+    await PredictionHelper.predictAndHandleResult(
+      context: context,
+      mlService: _mlService,
+      audioService: _audioService,
+      signatureKey: _signatureKey,
+      correctAnswer: _currentNumber,
+      mounted: mounted,
       selectedImage: _selectedImage,
+      navigationType: NavigationType.pop,
+      setProcessing: (isProcessing) {
+        if (mounted) {
+          setState(() {
+            _isProcessing = isProcessing;
+          });
+        }
+      },
+      setFeedbackAnimation: (animation) {
+        if (mounted) {
+          setState(() {
+            _feedbackAnimation = animation;
+          });
+        }
+      },
+      clearCanvas: () {
+        _controller.clear();
+        _selectedImage = null;
+      },
+      onCorrect: widget.onLevelComplete,
     );
-
-    if (prediction == _currentNumber) {
-      final random = Random();
-      _selectedGif = _gifPaths[random.nextInt(_gifPaths.length)];
-
-      setState(() {
-        _feedbackAnimation = Stack(
-          children: [
-            _buildFullScreenAnimation('assets/animations/Confetti.json'),
-            _buildBottomGif(_selectedGif!),
-          ],
-        );
-      });
-
-      await _audioService.playAudio(AudioFiles.congratulations);
-      await Future.delayed(const Duration(seconds: 2));
-
-      widget.onLevelComplete();
-
-      Future.delayed(const Duration(milliseconds: 1200), () {
-        if (mounted) Navigator.pop(context);
-      });
-    } else {
-      _selectedGif = _wrongGifPaths.first;
-
-      setState(() {
-        _feedbackAnimation = Stack(
-          children: [
-            _buildFullScreenAnimation('assets/animations/SadFace.json'),
-            _buildBottomGif(_selectedGif!),
-          ],
-        );
-      });
-
-      await _audioService.playAudio(AudioFiles.tryAgain);
-      await Future.delayed(const Duration(seconds: 3));
-
-      _controller.clear();
-      _selectedImage = null;
-      _icon = const SizedBox.shrink();
-
-      if (mounted) {
-        setState(() {
-          _feedbackAnimation = const SizedBox.shrink();
-        });
-      }
-    }
-
-    if (mounted) {
-      setState(() {
-        _isProcessing = false;
-      });
-    }
   }
 
   void _clearCanvas() {
@@ -175,38 +124,8 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
     setState(() {
       _controller.clear();
       _selectedImage = null;
-      _icon = const SizedBox.shrink();
       _feedbackAnimation = const SizedBox.shrink();
     });
-  }
-
-  Widget _buildFullScreenAnimation(String assetPath) {
-    return Positioned.fill(
-      child: Container(
-        color: Colors.black.withOpacity(0.4),
-        child: Center(
-          child: Lottie.asset(
-            assetPath,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomGif(String gifPath) {
-    return Positioned(
-      bottom: 50,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: Image.asset(
-          gifPath,
-     width: 250,
-          height: 250,
-        ),
-      ),
-    );
   }
 
   Widget _buildIconButton({
@@ -278,8 +197,6 @@ class _SecondLevelScreenState extends State<SecondLevelScreen> {
                   child: SignatureCanvas(controller: _controller, signatureKey: _signatureKey),
                 ),
               ),
-              const SizedBox(height: 20),
-              _icon,
               const SizedBox(height: 20),
             ],
           ),

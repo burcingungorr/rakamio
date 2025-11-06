@@ -19,13 +19,13 @@ class FifthLevelPage extends StatefulWidget {
 }
 
 class _FifthLevelPageState extends State<FifthLevelPage> {
-    final AudioService _audioService = AudioService();
+  final AudioService _audioService = AudioService();
 
   @override
   void initState() {
     super.initState();
 
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _audioService.playAudio(AudioFiles.sum);
     });
 
@@ -36,17 +36,34 @@ class _FifthLevelPageState extends State<FifthLevelPage> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(221, 255, 255, 255),
-      body: Center(
-        child: Text(
-          '${widget.num1}  +  ${widget.num2}',
-          style: const TextStyle(
-            fontSize: 110,
-            fontWeight: FontWeight.w900,
-            color: Colors.red,
+      body: Stack(
+        children: [
+          // 🔹 Ortadaki toplama işlemi
+          Center(
+            child: Text(
+              '${widget.num1}  +  ${widget.num2}',
+              style: const TextStyle(
+                fontSize: 110,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+              ),
+            ),
           ),
-        ),
+
+          Positioned(
+            top:-10,
+            right: -30,
+            child: Image.asset(
+              'assets/gif/fifthlevel.gif',
+              width: screenWidth * 0.60, 
+              fit: BoxFit.contain,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -72,7 +72,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
 
   Future<void> _loadLastLevel() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    int lastLevel = prefs.getInt('lastLevel') ?? 0;
+    int lastLevel = prefs.getInt('lastLevel2') ?? 0;
     setState(() {
       _unlockedLevels =
           lastLevel + 1 > _unlockedLevels ? lastLevel + 1 : _unlockedLevels;
@@ -87,7 +87,7 @@ class _LevelSelectionScreen2State extends State<LevelSelectionScreen2>
 
   Future<void> _saveLastLevel(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('lastLevel', index);
+    await prefs.setInt('lastLevel2', index);
   }
 
   void _selectLevel(int index) {

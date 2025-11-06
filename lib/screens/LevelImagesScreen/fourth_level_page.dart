@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/media_model.dart';
 import 'package:flutter_application_1/utils/constants.dart';
-import '../../models/media_model.dart';
 import '../DrawsScreen/fourth_level_screen.dart';
 import '../../services/audio_service.dart';
 
@@ -42,7 +41,6 @@ class _FourthLevelPageState extends State<FourthLevelPage> {
                 .number,
             onCorrect: () {
               widget.onLevelComplete();
-              Navigator.pop(context, true);
             },
           ),
         ),

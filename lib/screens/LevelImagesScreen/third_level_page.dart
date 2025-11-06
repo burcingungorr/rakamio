@@ -41,7 +41,6 @@ class _ThirdLevelPageState extends State<ThirdLevelPage> {
                 .number,
             onCorrect: () {
               widget.onLevelComplete();
-              Navigator.pop(context, true);
             },
           ),
         ),

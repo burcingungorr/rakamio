@@ -18,7 +18,7 @@ class _LevelSelectionScreen5State extends State<LevelSelectionScreen5> {
   final Set<int> _starredLevels = {};
   bool _animatePencil = true;
   bool _isLoading = true;
-int _currentLevel = 40;
+  int _currentLevel = 40;
 
   final AudioService _audioService = AudioService();
 
